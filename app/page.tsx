@@ -2,12 +2,12 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { 
-  Building2, 
-  Mail, 
-  Lock, 
-  Eye, 
-  EyeOff, 
+import {
+  Building2,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
   ShieldCheck,
   ChevronRight,
   ArrowRight
@@ -54,12 +54,12 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen w-full flex flex-col md:flex-row bg-background">
-      
+
       {/* Left Panel: Brand & Info Panel */}
       <div className="md:w-1/2 bg-slate-900 text-white flex flex-col justify-between p-8 md:p-12 lg:p-16 relative overflow-hidden">
         {/* Subtle decorative background patterns */}
         <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#f97316_1px,transparent_1px)] [background-size:16px_16px]" />
-        
+
         {/* Header Branding */}
         <div className="flex items-center gap-3 relative z-10">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-orange-500 text-white shadow-lg">
@@ -97,7 +97,7 @@ export default function LoginPage() {
       {/* Right Panel: Login Form & Sandbox */}
       <div className="md:w-1/2 flex flex-col justify-center px-6 py-12 md:px-12 lg:px-20 bg-background">
         <div className="mx-auto w-full max-w-md space-y-8">
-          
+
           {/* Header titles */}
           <div>
             <h3 className="text-2xl font-semibold tracking-tight">System Login</h3>
@@ -108,7 +108,7 @@ export default function LoginPage() {
 
           {/* Form */}
           <form onSubmit={handleLogin} className="space-y-4">
-            
+
             {/* Role Select Input */}
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-muted-foreground">Organizational Role</label>
@@ -181,7 +181,7 @@ export default function LoginPage() {
                 </span>
               ) : (
                 <span className="flex items-center gap-1.5">
-                  Secure Access Terminal <ChevronRight className="h-4 w-4" />
+                  Login <ChevronRight className="h-4 w-4" />
                 </span>
               )}
             </button>
@@ -190,7 +190,7 @@ export default function LoginPage() {
           {/* Quick Demo Accounts Sandbox Panel */}
           <div className="rounded-lg border border-border bg-muted/30 p-4 mt-4">
             <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
-              Developer Demo Accounts
+              Demo Accounts
             </h4>
             <p className="text-[11px] text-muted-foreground mb-3">
               Click any agency role profile below to auto-populate credentials for instant interface simulation:
