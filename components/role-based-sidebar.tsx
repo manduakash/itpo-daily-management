@@ -51,12 +51,12 @@ const navigationMap: Record<UserRole, Array<{ name: string; href: string; icon: 
     { name: "Reports", href: "/nbcc/reports", icon: FileBarChart2 },
   ],
   shapoorji: [
-    { name: "Dashboard", href: "/shapoorji/dashboard", icon: LayoutDashboard },
-    { name: "Assigned Contracts", href: "/shapoorji/assigned", icon: FolderOpen },
-    { name: "Estimations", href: "/shapoorji/estimations", icon: Calculator, badge: 1 },
-    { name: "Assign Engineers", href: "/shapoorji/assign-engineers", icon: Users },
-    { name: "Ongoing Projects", href: "/shapoorji/ongoing", icon: Activity },
-    { name: "Completion Reports", href: "/shapoorji/completion", icon: CheckCircle },
+    { name: "Dashboard", href: "/sapurji/dashboard", icon: LayoutDashboard },
+    { name: "Assigned Contracts", href: "/sapurji/assigned-contracts", icon: FolderOpen },
+    { name: "Estimations", href: "/sapurji/estimations", icon: Calculator, badge: 1 },
+    { name: "Assign Engineers", href: "/sapurji/assign-engineers", icon: Users },
+    { name: "Ongoing Projects", href: "/sapurji/ongoing-projects", icon: Activity },
+    { name: "Completion Reports", href: "/sapurji/completion-reports", icon: CheckCircle },
   ],
   nbcc_engineer: [
     { name: "Dashboard", href: "/nbcc-eng/dashboard", icon: LayoutDashboard },
