@@ -1,344 +1,319 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  LineChart,
-  Line,
-  Legend
-} from "recharts";
-import { 
-  Briefcase, 
-  Clock, 
-  CheckCircle2, 
-  AlertCircle, 
-  IndianRupee, 
-  ArrowUpRight,
-  TrendingUp,
-  Building2,
-  ArrowRight,
-  Plus
+import React from "react";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableRow,
+} from "@/components/ui/table";
+import {
+    AlertTriangle,
+    CheckCircle2,
+    Clock,
+    PlusCircle,
+    Wrench,
+    Camera,
+    Building2,
+    MessageSquare,
+    Eye,
 } from "lucide-react";
-import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
-// Mock Data
-const kpiData = [
-  {
-    title: "Total Raised Contracts",
-    value: "48",
-    description: "+4 from last week",
-    icon: Briefcase,
-    color: "text-blue-600 bg-blue-50 dark:bg-blue-950/50 dark:text-blue-400",
-  },
-  {
-    title: "Pending Your Approval",
-    value: "07",
-    description: "Requires immediate review",
-    icon: Clock,
-    color: "text-amber-600 bg-amber-50 dark:bg-amber-950/50 dark:text-amber-400",
-  },
-  {
-    title: "Active Works (WIP)",
-    value: "18",
-    description: "Assigned to NBCC / Shapoorji",
-    icon: TrendingUp,
-    color: "text-emerald-600 bg-emerald-50 dark:bg-emerald-950/50 dark:text-emerald-400",
-  },
-  {
-    title: "Inspection Pending",
-    value: "05",
-    description: "Ready for ITPO verification",
-    icon: CheckCircle2,
-    color: "text-indigo-600 bg-indigo-50 dark:bg-indigo-950/50 dark:text-indigo-400",
-  },
+// ─── Mock Data for ITPO ───────────────────────────────────────
+const userStats = [
+    {
+        title: "Active Contracts",
+        value: 12,
+        subtitle: "Currently in execution",
+        icon: Clock,
+        variant: "default",
+    },
+    {
+        title: "Pending Approvals",
+        value: 3,
+        subtitle: "Estimations & Closures",
+        icon: AlertTriangle,
+        variant: "alert",
+    },
+    {
+        title: "Closed Contracts",
+        value: 28,
+        subtitle: "Successfully completed",
+        icon: CheckCircle2,
+        variant: "success",
+    },
 ];
 
-const contractStatusData = [
-  { name: "Raised", count: 4 },
-  { name: "Under Review", count: 6 },
-  { name: "Est. Submitted", count: 7 },
-  { name: "Approved", count: 5 },
-  { name: "WIP", count: 18 },
-  { name: "Inspection", count: 5 },
-  { name: "Closed", count: 3 },
+const activeContracts = [
+    {
+        id: "CON-2041",
+        category: "General Civil",
+        description: "Renovation of Convention Hall 3 & 4 Main Stage",
+        status: "Work In Progress",
+        agency: "Shapoorji (Contractor)",
+        progress: 65,
+        lastUpdate: "Materials delivered; structure frame completed",
+        date: "Today, 10:30 AM",
+    },
+    {
+        id: "CON-2035",
+        category: "Plumbing",
+        description: "Main Foyer water supply line restructuring",
+        status: "Estimation Submitted",
+        agency: "NBCC (PMC)",
+        progress: 30,
+        lastUpdate: "NBCC submitted cost estimation of ₹12,20,000",
+        date: "Yesterday, 04:15 PM",
+    },
+    {
+        id: "CON-2022",
+        category: "Mechanical/HVAC",
+        description: "Central AC chiller unit replacement in Block B",
+        status: "Inspection Pending",
+        agency: "NBCC & Shapoorji Both",
+        progress: 90,
+        lastUpdate: "Contractors uploaded site photos for final review",
+        date: "Oct 12, 02:00 PM",
+    },
 ];
 
-const categoryData = [
-  { name: "General Civil", value: 14, color: "#3b82f6" },
-  { name: "Electrical", value: 12, color: "#eab308" },
-  { name: "Plumbing", value: 8, color: "#06b6d4" },
-  { name: "Mechanical", value: 6, color: "#ec4899" },
-  { name: "AMC/CMC", value: 8, color: "#10b981" },
+const recentHistory = [
+    { id: "CON-1902", category: "Electrical", date: "Sep 28, 2024", status: "Closed" },
+    { id: "CON-1855", category: "General Civil", date: "Aug 15, 2024", status: "Closed" },
+    { id: "CON-1720", category: "Plumbing", date: "Jul 02, 2024", status: "Closed" },
 ];
 
-const monthlyExpenditure = [
-  { month: "Jan", budget: 45, actual: 40 },
-  { month: "Feb", budget: 60, actual: 55 },
-  { month: "Mar", budget: 85, actual: 92 },
-  { month: "Apr", budget: 70, actual: 68 },
-  { month: "May", budget: 95, actual: 85 },
-  { month: "Jun", budget: 120, actual: 110 },
-];
+// ─── Status Badge Helper ────────────────────────────────────────────
+function ITPOStatusBadge({ status }: { status: string }) {
+    const styles: Record<string, string> = {
+        "Raised": "bg-slate-500/15 text-slate-700 dark:text-slate-400 border-slate-500/20",
+        "Under Review": "bg-blue-500/15 text-blue-700 dark:text-blue-400 border-blue-500/20",
+        "Estimation Submitted": "bg-purple-500/15 text-purple-700 dark:text-purple-400 border-purple-500/20",
+        "Work In Progress": "bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/20",
+        "Inspection Pending": "bg-indigo-500/15 text-indigo-700 dark:text-indigo-400 border-indigo-500/20",
+        "Closed": "bg-green-500/15 text-green-700 dark:text-green-400 border-green-500/20",
+    };
 
-const pendingApprovals = [
-  {
-    id: "CON-2024-089",
-    title: "Renovation of Convention Hall 3 & 4",
-    agency: "Shapoorji (Case 3)",
-    type: "Civil",
-    scale: "Large",
-    estimation: "₹45,50,000",
-    status: "Estimation Submitted",
-  },
-  {
-    id: "CON-2024-092",
-    title: "Plumbing Overhaul & Piping Replacement",
-    agency: "NBCC (Case 2)",
-    type: "Plumbing",
-    scale: "Medium",
-    estimation: "₹12,20,000",
-    status: "Estimation Submitted",
-  },
-  {
-    id: "CON-2024-101",
-    title: "HVAC Unit Replacement Area G",
-    agency: "NBCC & Shapoorji (Case 1)",
-    type: "Mechanical",
-    scale: "Large",
-    estimation: "Pending Bids",
-    status: "Under Review",
-  },
-];
+    return (
+        <Badge variant="outline" className={cn("font-medium whitespace-nowrap", styles[status] || styles["Raised"])}>
+            {status}
+        </Badge>
+    );
+}
 
+// ─── ITPO Dashboard Component ─────────────────────────────────────
 export default function ITPODashboard() {
-  const [mounted, setMounted] = useState(false);
+    const router = useRouter();
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+    return (
+        <div className="space-y-6">
 
-  if (!mounted) {
-    return <div className="p-8 text-center text-muted-foreground">Loading dashboard layout...</div>;
-  }
-
-  return (
-    <div className="space-y-8">
-      {/* Welcome & Quick Action Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-3xl font-semibold tracking-tight">ITPO Dashboard</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Overview of infrastructure contracts, estimations, and ongoing maintenance activities.
-          </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link href="/itpo/raise-contract">
-            <button className="inline-flex items-center justify-center gap-2 rounded-md bg-primary text-primary-foreground text-sm font-medium h-10 px-4 hover:bg-primary/90 transition-colors">
-              <Plus className="h-4 w-4" />
-              <span>Raise New Contract</span>
-            </button>
-          </Link>
-        </div>
-      </div>
-
-      {/* KPI Cards Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {kpiData.map((kpi, i) => {
-          const Icon = kpi.icon;
-          return (
-            <div key={i} className="rounded-xl border border-border bg-card p-6 text-card-foreground shadow-sm">
-              <div className="flex items-center justify-between space-y-0 pb-2">
-                <span className="text-xs font-semibold text-muted-foreground tracking-wider uppercase">
-                  {kpi.title}
-                </span>
-                <div className={`p-2 rounded-lg ${kpi.color}`}>
-                  <Icon className="h-4 w-4" />
+            {/* ─── Page Header & Quick Actions ────────────────────────── */}
+            <div className="bg-white dark:bg-slate-950/50 rounded-2xl">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-primary/15 p-6 rounded-2xl border border-primary/10">
+                    <div>
+                        <h1 className="text-2xl md:text-3xl font-bold tracking-tight font-heading">
+                            Welcome, ITPO Administrator!
+                        </h1>
+                        <p className="text-muted-foreground mt-1 flex items-center gap-2">
+                            <Building2 className="h-4 w-4" />
+                            Bharat Mandapam • Secretariat Admin Panel
+                        </p>
+                    </div>
+                    <Button onClick={() => router.push("/itpo/raise-contract")} size="lg" className="gap-2 shadow-lg hover:-translate-y-0.5 transition-transform">
+                        <PlusCircle className="h-5 w-5" />
+                        Raise New Contract
+                    </Button>
                 </div>
-              </div>
-              <div className="mt-2">
-                <div className="text-2xl font-bold tracking-tight">{kpi.value}</div>
-                <p className="text-xs text-muted-foreground mt-1">{kpi.description}</p>
-              </div>
             </div>
-          );
-        })}
-      </div>
 
-      {/* Charts Section */}
-      <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">
-        {/* Contract Status Bar Chart */}
-        <div className="col-span-1 lg:col-span-2 rounded-xl border border-border bg-card p-6 shadow-sm">
-          <div className="flex flex-col space-y-1.5 pb-6">
-            <h3 className="text-sm font-semibold tracking-tight">Contract Lifecycle Distribution</h3>
-            <p className="text-xs text-muted-foreground">Number of contracts currently sitting in each status phase</p>
-          </div>
-          <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={contractStatusData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                <XAxis dataKey="name" fontSize={11} tickLine={false} axisLine={false} />
-                <YAxis fontSize={11} tickLine={false} axisLine={false} allowDecimals={false} />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: "hsl(var(--card))", 
-                    borderColor: "hsl(var(--border))",
-                    borderRadius: "8px",
-                    fontSize: "12px"
-                  }} 
-                />
-                <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} barSize={36} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
+            {/* ─── KPI Cards ────────────────────────────────────────── */}
+            <div className="grid gap-4 sm:grid-cols-3">
+                {userStats.map((stat) => (
+                    <Card
+                        key={stat.title}
+                        className={cn(
+                            "relative overflow-hidden transition-all hover:shadow-md",
+                            stat.variant === "alert" && "border-purple-500/50 shadow-purple-500/10",
+                            stat.variant === "success" && "border-green-500/30"
+                        )}
+                    >
+                        <CardHeader
+                            className={cn(
+                                "flex flex-row items-center justify-between py-2 rounded-none space-y-0",
+                                stat.variant === "alert"
+                                    ? "bg-purple-500/5"
+                                    : stat.variant === "success"
+                                        ? "bg-green-500/5"
+                                        : "bg-blue-500/5"
+                            )}
+                        >
+                            <CardTitle className="text-sm font-medium text-muted-foreground">
+                                {stat.title}
+                            </CardTitle>
 
-        {/* Category Share Donut Chart */}
-        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-          <div className="flex flex-col space-y-1.5 pb-6">
-            <h3 className="text-sm font-semibold tracking-tight">Contracts by Category</h3>
-            <p className="text-xs text-muted-foreground">Proportional distribution of current work categories</p>
-          </div>
-          <div className="h-52 relative flex items-center justify-center">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={categoryData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={4}
-                  dataKey="value"
-                >
-                  {categoryData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: "hsl(var(--card))", 
-                    borderColor: "hsl(var(--border))",
-                    borderRadius: "8px",
-                    fontSize: "12px" 
-                  }} 
-                />
-              </PieChart>
-            </ResponsiveContainer>
-            {/* Center Summary Label */}
-            <div className="absolute flex flex-col items-center justify-center">
-              <span className="text-xl font-bold">48</span>
-              <span className="text-[10px] text-muted-foreground uppercase font-medium">Total Items</span>
-            </div>
-          </div>
-          {/* Legend Details */}
-          <div className="grid grid-cols-2 gap-2 mt-4">
-            {categoryData.map((cat, i) => (
-              <div key={i} className="flex items-center gap-2 text-xs">
-                <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
-                <span className="text-muted-foreground truncate">{cat.name} ({cat.value})</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+                            <div
+                                className={cn(
+                                    "p-2 rounded-md",
+                                    stat.variant === "alert"
+                                        ? "bg-purple-500/10 text-purple-600"
+                                        : stat.variant === "success"
+                                            ? "bg-green-500/10 text-green-600"
+                                            : "bg-primary/10 text-primary"
+                                )}
+                            >
+                                <stat.icon className="h-4 w-4" />
+                            </div>
+                        </CardHeader>
 
-      {/* Monthly Trends & Pending Approvals */}
-      <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">
-        {/* Budget Execution Trend */}
-        <div className="col-span-1 rounded-xl border border-border bg-card p-6 shadow-sm flex flex-col justify-between">
-          <div>
-            <div className="flex flex-col space-y-1.5 pb-4">
-              <h3 className="text-sm font-semibold tracking-tight">Approved Budget vs. Expenditure</h3>
-              <p className="text-xs text-muted-foreground">Monthly summary of financial layouts (in Lakhs ₹)</p>
-            </div>
-            <div className="h-56">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={monthlyExpenditure} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                  <XAxis dataKey="month" fontSize={11} tickLine={false} axisLine={false} />
-                  <YAxis fontSize={11} tickLine={false} axisLine={false} />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: "hsl(var(--card))", 
-                      borderColor: "hsl(var(--border))",
-                      borderRadius: "8px",
-                      fontSize: "12px"
-                    }} 
-                  />
-                  <Legend verticalAlign="top" height={36} iconType="circle" iconSize={8} wrapperStyle={{ fontSize: "11px" }} />
-                  <Line type="monotone" dataKey="budget" name="Approved Limit" stroke="#3b82f6" strokeWidth={2} activeDot={{ r: 4 }} />
-                  <Line type="monotone" dataKey="actual" name="Actual Cost" stroke="#10b981" strokeWidth={2} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        </div>
+                        <CardContent>
+                            <div className="text-3xl font-bold tracking-tight mt-2">
+                                {stat.value}
+                            </div>
 
-        {/* Action Needed Component Table */}
-        <div className="col-span-1 lg:col-span-2 rounded-xl border border-border bg-card p-6 shadow-sm">
-          <div className="flex items-center justify-between pb-4">
-            <div className="flex flex-col space-y-1.5">
-              <h3 className="text-sm font-semibold tracking-tight">Estimations Pending Action</h3>
-              <p className="text-xs text-muted-foreground">Estimations submitted by NBCC / Shapoorji awaiting ITPO Approval</p>
-            </div>
-            <Link href="/itpo/approvals" className="text-xs text-primary font-medium flex items-center gap-1 hover:underline">
-              <span>View All</span>
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-          </div>
-          
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="border-b border-border text-muted-foreground font-medium">
-                  <th className="py-3 px-2">ID</th>
-                  <th className="py-3 px-2">Title</th>
-                  <th className="py-3 px-2">Assigned Agency</th>
-                  <th className="py-3 px-2">Est. Cost</th>
-                  <th className="py-3 px-2">Status</th>
-                  <th className="py-3 px-2 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/60">
-                {pendingApprovals.map((item, i) => (
-                  <tr key={i} className="hover:bg-accent/40 transition-colors">
-                    <td className="py-3.5 px-2 font-mono font-medium">{item.id}</td>
-                    <td className="py-3.5 px-2">
-                      <div className="flex flex-col">
-                        <span className="font-medium text-foreground">{item.title}</span>
-                        <span className="text-[10px] text-muted-foreground">{item.type} • {item.scale} Scale</span>
-                      </div>
-                    </td>
-                    <td className="py-3.5 px-2 text-muted-foreground">{item.agency}</td>
-                    <td className="py-3.5 px-2 font-medium text-foreground">{item.estimation}</td>
-                    <td className="py-3.5 px-2">
-                      <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
-                        {item.status}
-                      </span>
-                    </td>
-                    <td className="py-3.5 px-2 text-right">
-                      <Link href={`/itpo/approvals/${item.id}`}>
-                        <button className="inline-flex h-7 items-center justify-center rounded-md bg-secondary text-secondary-foreground text-[11px] font-semibold px-3 border border-border hover:bg-accent transition-colors">
-                          Review
-                        </button>
-                      </Link>
-                    </td>
-                  </tr>
+                            <p className="text-xs text-muted-foreground mt-1">
+                                {stat.subtitle}
+                            </p>
+                        </CardContent>
+                    </Card>
                 ))}
-              </tbody>
-            </table>
-          </div>
+            </div>
+
+            {/* ─── Main Content Split ───────────────────────────────── */}
+            <div className="grid gap-6 lg:grid-cols-3">
+
+                {/* Active Contracts Tracker (Takes up 2/3) */}
+                <Card className="lg:col-span-2">
+                    <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <CardTitle className="text-lg font-semibold">
+                                    Active Contracts Tracker
+                                </CardTitle>
+                                <CardDescription>
+                                    Live execution progress of ongoing works in Bharat Mandapam
+                                </CardDescription>
+                            </div>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        {activeContracts.map((contract) => (
+                            <div key={contract.id} className="p-4 rounded-xl border border-border bg-card/50 hover:bg-muted/50 transition-colors">
+                                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-4">
+                                    <div>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <span className="font-mono text-sm font-semibold text-primary">{contract.id}</span>
+                                            <ITPOStatusBadge status={contract.status} />
+                                        </div>
+                                        <h4 className="font-medium text-base text-foreground">{contract.description}</h4>
+                                        <span className="text-sm text-muted-foreground flex flex-wrap items-center gap-x-2 gap-y-1 mt-1">
+                                            <Wrench className="h-3 w-3 text-primary" /> {contract.category} 
+                                            <span className="text-slate-300 dark:text-slate-700">|</span> 
+                                            <span className="font-medium">{contract.agency}</span> 
+                                            <span className="text-slate-300 dark:text-slate-700">|</span> 
+                                            <span>{contract.date}</span>
+                                        </span>
+                                    </div>
+
+                                    {/* Action Buttons based on status */}
+                                    {contract.status === "Inspection Pending" && (
+                                        <Button onClick={() => router.push(`/itpo/approvals/${contract.id}`)} size="sm" variant="default" className="bg-purple-600 hover:bg-purple-700 text-white gap-2">
+                                            <Camera className="h-4 w-4" /> Inspect & Close
+                                        </Button>
+                                    )}
+                                    {contract.status === "Estimation Submitted" && (
+                                        <Button onClick={() => router.push(`/itpo/approvals/${contract.id}`)} size="sm" variant="default" className="bg-amber-600 hover:bg-amber-700 text-white gap-2">
+                                            <Eye className="h-4 w-4" /> Review Estimate
+                                        </Button>
+                                    )}
+                                </div>
+
+                                {/* Live Progress Bar */}
+                                <div className="space-y-2">
+                                    <div className="flex justify-between text-[10px] sm:text-xs font-medium text-muted-foreground">
+                                        <span>Raised</span>
+                                        <span>Review</span>
+                                        <span>Estimation</span>
+                                        <span>WIP</span>
+                                        <span>Inspection</span>
+                                    </div>
+                                    <Progress value={contract.progress} className="h-2" />
+                                    <p className="text-xs text-muted-foreground italic mt-2 flex items-center gap-1.5">
+                                        <MessageSquare className="h-3 w-3" />
+                                        Latest Action: {contract.lastUpdate}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                    </CardContent>
+                </Card>
+
+                {/* Right Sidebar Column (Takes up 1/3) */}
+                <div className="space-y-6">
+
+                    {/* Action Required Widget */}
+                    <Card className="border-purple-500/80 bg-purple-500/10 shadow-none">
+                        <CardHeader className="pb-3">
+                            <CardTitle className="text-base font-semibold flex items-center gap-2 text-purple-700 dark:text-purple-400">
+                                <AlertTriangle className="h-4 w-4" /> Action Required
+                            </CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <p className="text-sm text-muted-foreground mb-4">
+                                Contract <strong className="text-foreground">CON-2022</strong> (AC Replacement Block B) has been marked as complete by the PMC. Verify work logs to complete closure.
+                            </p>
+                            <Button onClick={() => router.push("/itpo/approvals")} size="sm" variant="outline" className="w-full border-purple-500/30 hover:bg-purple-500/10 text-purple-700 dark:text-purple-400">
+                                Review Execution Details
+                            </Button>
+                        </CardContent>
+                    </Card>
+
+                    {/* Recent History Widget */}
+                    <Card>
+                        <CardHeader className="pb-3">
+                            <div className="flex items-center justify-between">
+                                <CardTitle className="text-base font-semibold">
+                                    Recently Closed Works
+                                </CardTitle>
+                                <Button onClick={() => router.push("/itpo/contracts")} variant="ghost" size="sm" className="h-8 text-xs">
+                                    View All
+                                </Button>
+                            </div>
+                        </CardHeader>
+                        <CardContent className="p-0">
+                            <Table>
+                                <TableBody>
+                                    {recentHistory.map((item) => (
+                                        <TableRow key={item.id} className="hover:bg-transparent">
+                                            <TableCell className="py-3 pl-4">
+                                                <div className="font-medium text-sm text-foreground">{item.category}</div>
+                                                <div className="text-xs text-muted-foreground font-mono">{item.id}</div>
+                                            </TableCell>
+                                            <TableCell className="py-3 text-right pr-4">
+                                                <div className="text-sm text-muted-foreground mb-1">{item.date}</div>
+                                                <ITPOStatusBadge status={item.status} />
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </CardContent>
+                    </Card>
+                </div>
+
+            </div>
         </div>
-      </div>
-    </div>
-  );
+    );
 }
