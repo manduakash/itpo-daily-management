@@ -38,7 +38,7 @@ const engineerKPIs = [
     value: "03",
     description: "Pending for Hall 3, 5",
     icon: ClipboardCheck,
-    gradient: "from-amber-500/10 via-transparent to-transparent",
+    gradient: "from-amber-500/30 via-transparent to-transparent",
     border: "border-amber-500/20",
     iconColor: "text-amber-600",
   },
@@ -47,7 +47,7 @@ const engineerKPIs = [
     value: "88%",
     description: "Avg. across 5 sites",
     icon: TrendingUp,
-    gradient: "from-emerald-500/10 via-transparent to-transparent",
+    gradient: "from-emerald-500/30 via-transparent to-transparent",
     border: "border-emerald-500/20",
     iconColor: "text-emerald-600",
   },
@@ -56,7 +56,7 @@ const engineerKPIs = [
     value: "06",
     description: "Awaiting ITPO sign-off",
     icon: CheckCircle,
-    gradient: "from-blue-500/10 via-transparent to-transparent",
+    gradient: "from-blue-500/30 via-transparent to-transparent",
     border: "border-blue-500/20",
     iconColor: "text-blue-600",
   },
@@ -145,7 +145,7 @@ export default function ShapoorjiEngineerDashboard() {
             Live Execution Portal
           </div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
-            Engineer Dashboard
+            Shapoorji Engineer Dashboard
           </h1>
           <p className="text-slate-500 text-sm mt-1">
             Welcome back, <span className="font-semibold text-slate-700">Shapoorji Site Team</span>. You have 3 reports due today.
