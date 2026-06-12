@@ -1,25 +1,30 @@
-// app/layout.tsx
-"use client";
+import React from "react";
+import { cookies } from "next/headers";
+import { RoleBasedSidebar, UserRole } from "@/components/role-based-sidebar";
+import "@/app/globals.css"; // Your system global tailwind configurations
 
-import React, { useState } from "react";
-import { RoleBasedSidebar, UserRole } from "@/components//sidebars/itpo-sidebar";
+export const metadata = {
+  title: "Bharat Mandapam Contract Management System",
+  description: "Centralized contract operations platform for ITPO, NBCC, and Shapoorji.",
+};
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  // Toggle this value to test any of the 5 setups instantly:
-  const [role, setRole] = useState<UserRole>("itpo");
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Read the cookie securely on the server
+  const cookieStore = await cookies();
+  const userRoleCookie = cookieStore.get("user-role")?.value;
+  
+  // Cast value to UserRole, fallback to "itpo" if cookie is not yet set
+  const currentRole: UserRole = (userRoleCookie as UserRole) || "itpo";
 
   return (
     <html lang="en">
-      <body>
-        <div className="min-h-screen bg-background text-foreground flex">
-          
-          {/* Dynamic Unified Sidebar */}
-          <RoleBasedSidebar currentRole={role} onRoleChange={setRole} />
-          
-          {/* Working Workspace Offset */}
-          <div className="flex-1 pl-64 flex flex-col">
-            {children}
-          </div>
+      <body className="antialiased min-h-screen bg-background text-foreground flex">
+        {/* Render the Dynamic Sidebar server-side */}
+        <RoleBasedSidebar currentRole={currentRole} />
+
+        {/* Content canvas adjusted to fit sidebar offset */}
+        <div className="flex-1 pl-64 flex flex-col min-h-screen">
+          {children}
         </div>
       </body>
     </html>
