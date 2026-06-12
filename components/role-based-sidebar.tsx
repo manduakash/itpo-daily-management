@@ -124,7 +124,7 @@ export function RoleBasedSidebar({ currentRole }: { currentRole: UserRole }) {
                 <span>{item.name}</span>
               </div>
               {item.badge && (
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground">
+                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-slate-50">
                   {item.badge}
                 </span>
               )}
