@@ -40,9 +40,9 @@ export default function LoginPage() {
       // Route appropriately based on role choice
       if (selectedRole === "itpo") router.push("/itpo/dashboard");
       else if (selectedRole === "nbcc") router.push("/nbcc/dashboard");
-      else if (selectedRole === "shapoorji") router.push("/shapoorji/dashboard");
+      else if (selectedRole === "shapoorji") router.push("/sapurji/dashboard");
       else if (selectedRole === "nbcc_engineer") router.push("/nbcc-eng/dashboard");
-      else if (selectedRole === "shapoorji_engineer") router.push("/sp-eng/dashboard");
+      else if (selectedRole === "shapoorji_engineer") router.push("/sapurji-eng/dashboard");
     }, 1200);
   };
 
