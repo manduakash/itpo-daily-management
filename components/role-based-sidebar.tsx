@@ -66,11 +66,11 @@ const navigationMap: Record<UserRole, Array<{ name: string; href: string; icon: 
     { name: "Completion", href: "/nbcc-eng/completion", icon: CheckCircle },
   ],
   shapoorji_engineer: [
-    { name: "Dashboard", href: "/sp-eng/dashboard", icon: LayoutDashboard },
-    { name: "My Assignments", href: "/sp-eng/my-assignments", icon: ClipboardCheck, badge: 2 },
-    { name: "Daily Progress", href: "/sp-eng/daily-progress", icon: Calendar },
-    { name: "Site Reports", href: "/sp-eng/site-reports", icon: FileText },
-    { name: "Completion", href: "/sp-eng/completion", icon: CheckCircle },
+    { name: "Dashboard", href: "/sapurji-eng/dashboard", icon: LayoutDashboard },
+    { name: "My Assignments", href: "/sapurji-eng/my-assingments", icon: ClipboardCheck, badge: 2 },
+    { name: "Daily Progress", href: "/sapurji-eng/daily-progress", icon: Calendar },
+    { name: "Site Reports", href: "/sapurji-eng/site-reports", icon: FileText },
+    { name: "Completion", href: "/sapurji-eng/completion", icon: CheckCircle },
   ],
 };
 
