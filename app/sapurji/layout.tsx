@@ -14,7 +14,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const userRoleCookie = cookieStore.get("user-role")?.value;
   
   // Cast value to UserRole, fallback to "itpo" if cookie is not yet set
-  const currentRole: UserRole = (userRoleCookie as UserRole) || "itpo";
+  const currentRole: UserRole = (userRoleCookie as UserRole) || "shapoorji";
 
   return (
     <html lang="en">
