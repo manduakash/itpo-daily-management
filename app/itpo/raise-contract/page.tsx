@@ -5,15 +5,10 @@ import { useRouter } from "next/navigation";
 import {
     Card,
     CardContent,
-    CardDescription,
-    CardHeader,
     CardTitle,
-    CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import {
     Upload,
     ArrowLeft,
@@ -42,69 +37,73 @@ export default function RaiseContractPage() {
         // Simulate API execution
         setTimeout(() => {
             setIsLoading(false);
-            router.push("/itpo/dashboard");
+            router.push("/itpo");
         }, 1200);
     };
 
     return (
-        <div className="space-y-6 max-w-4xl mx-auto">
+        <div className="space-y-12 max-w-4xl mx-auto animate-in fade-in duration-1000 pb-20 font-sans selection:bg-indigo-100 p-10">
             
             {/* Header / Back Action */}
             <div className="flex items-center justify-between">
                 <Button 
-                    variant="ghost" 
+                    variant="outline" 
                     size="sm" 
-                    onClick={() => router.push("/itpo/dashboard")}
-                    className="gap-2 text-muted-foreground hover:text-foreground"
+                    onClick={() => router.push("/itpo")}
+                    className="h-12 px-6 rounded-2xl border-2 border-slate-200 font-black uppercase tracking-widest text-[9px] text-slate-700 bg-white hover:bg-slate-50 transition-all gap-2"
                 >
                     <ArrowLeft className="h-4 w-4" />
                     Back to Dashboard
                 </Button>
-                <span className="text-xs text-muted-foreground font-mono">Form Ref: ITPO-CRF-2025</span>
+                <Badge variant="outline" className="border-2 text-[8px] font-black uppercase tracking-widest px-2.5 py-1.5 border-slate-200 text-slate-500 bg-slate-50">
+                    Form Ref: ITPO-CRF-2025
+                </Badge>
             </div>
 
             {/* Main Form Card */}
-            <Card className="border-border shadow-sm">
-                <CardHeader className="bg-primary/5 border-b border-border/60 pb-6">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-primary/10 text-primary">
-                            <FileText className="h-5 w-5" />
+            <Card className="rounded-[48px] border-none shadow-xl overflow-hidden bg-white">
+                <div className="p-10 bg-gradient-to-r from-slate-900 via-indigo-950 to-indigo-900 text-white relative overflow-hidden">
+                    <div className="absolute inset-0 opacity-20 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+                    
+                    <div className="flex items-center gap-5 relative z-10">
+                        <div className="h-14 w-14 rounded-3xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg">
+                            <FileText size={28} className="text-white" />
                         </div>
-                        <div>
-                            <CardTitle className="text-xl font-bold tracking-tight">Raise New Infrastructure Contract</CardTitle>
-                            <CardDescription className="text-xs text-muted-foreground">
-                                Define maintenance, repairs, or renovations for delegation to NBCC or Shapoorji.
-                            </CardDescription>
+                        <div className="space-y-1">
+                            <CardTitle className="text-2xl font-black uppercase tracking-tight drop-shadow-sm">Raise Infrastructure Contract</CardTitle>
+                            <p className="text-[10px] font-bold text-indigo-200 uppercase tracking-widest leading-none">Define maintenance, repairs, or renovations for delegation to NBCC or Shapoorji</p>
                         </div>
                     </div>
-                </CardHeader>
+                </div>
                 
                 <form onSubmit={handleSubmit}>
-                    <CardContent className="space-y-6 pt-6">
+                    <CardContent className="p-10 space-y-8 relative bg-slate-50/30">
+                        <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/topography.png')]" />
                         
                         {/* Title Field */}
-                        <div className="space-y-2">
-                            <Label htmlFor="title" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                        <div className="space-y-2 relative z-10">
+                            <label htmlFor="title" className="text-[9px] font-black uppercase tracking-widest text-slate-400 block">
                                 Contract Title
-                            </Label>
-                            <Input 
+                            </label>
+                            <input 
                                 id="title"
+                                type="text"
                                 placeholder="e.g., Renovation of Convention Hall 3 & 4 Main Stage"
                                 required
-                                className="focus-visible:ring-primary"
+                                className="w-full h-12 px-4 rounded-xl border-2 border-slate-200 bg-white text-[10px] font-black uppercase tracking-widest outline-none text-slate-700 focus:border-indigo-400 focus:bg-white transition-all shadow-sm placeholder:text-slate-400"
                             />
                         </div>
 
                         {/* Side-by-Side: Category & Scale */}
-                        <div className="grid gap-4 sm:grid-cols-2">
+                        <div className="grid gap-6 sm:grid-cols-2 relative z-10">
                             <div className="space-y-2">
-                                <Label htmlFor="category" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                <label htmlFor="category" className="text-[9px] font-black uppercase tracking-widest text-slate-400 block">
                                     Work Category
-                                </Label>
+                                </label>
                                 <select 
                                     id="category"
-                                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                                     required
+                                    className="w-full h-12 px-4 rounded-xl border-2 border-slate-200 bg-white text-[10px] font-black uppercase tracking-widest outline-none text-slate-700 focus:border-indigo-400 transition-all cursor-pointer shadow-sm hover:border-slate-300"
                                 >
                                     <option value="">Select Category...</option>
                                     <option value="civil">General Civil</option>
@@ -116,13 +115,13 @@ export default function RaiseContractPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="scale" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                <label htmlFor="scale" className="text-[9px] font-black uppercase tracking-widest text-slate-400 block">
                                     Estimated Work Scale
-                                </Label>
+                                </label>
                                 <select 
                                     id="scale"
-                                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                                     required
+                                    className="w-full h-12 px-4 rounded-xl border-2 border-slate-200 bg-white text-[10px] font-black uppercase tracking-widest outline-none text-slate-700 focus:border-indigo-400 transition-all cursor-pointer shadow-sm hover:border-slate-300"
                                 >
                                     <option value="">Select Scale...</option>
                                     <option value="small">Small Scale (Routine Maintenance)</option>
@@ -133,15 +132,15 @@ export default function RaiseContractPage() {
                         </div>
 
                         {/* Side-by-Side: Priority & Target Deadline */}
-                        <div className="grid gap-4 sm:grid-cols-2">
+                        <div className="grid gap-6 sm:grid-cols-2 relative z-10">
                             <div className="space-y-2">
-                                <Label htmlFor="priority" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                <label htmlFor="priority" className="text-[9px] font-black uppercase tracking-widest text-slate-400 block">
                                     Priority Level
-                                </Label>
+                                </label>
                                 <select 
                                     id="priority"
-                                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                                     required
+                                    className="w-full h-12 px-4 rounded-xl border-2 border-slate-200 bg-white text-[10px] font-black uppercase tracking-widest outline-none text-slate-700 focus:border-indigo-400 transition-all cursor-pointer shadow-sm hover:border-slate-300"
                                 >
                                     <option value="">Select Priority...</option>
                                     <option value="low">Low (Routine Improvements)</option>
@@ -152,31 +151,31 @@ export default function RaiseContractPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="deadline" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                <label htmlFor="deadline" className="text-[9px] font-black uppercase tracking-widest text-slate-400 block">
                                     Target Completion Deadline
-                                </Label>
-                                <div className="relative">
-                                    <Calendar className="absolute left-3 top-3 h-4 w-4 text-muted-foreground/70" />
-                                    <Input 
+                                </label>
+                                <div className="relative flex">
+                                    <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                    <input 
                                         id="deadline"
                                         type="date"
                                         required
-                                        className="pl-9 focus-visible:ring-primary"
+                                        className="w-full h-12 pl-11 pr-4 rounded-xl border-2 border-slate-200 bg-white text-[10px] font-black uppercase tracking-widest outline-none text-slate-700 focus:border-indigo-400 focus:bg-white transition-all shadow-sm"
                                     />
                                 </div>
                             </div>
                         </div>
 
                         {/* Side-by-Side: Raising Target & Building Location */}
-                        <div className="grid gap-4 sm:grid-cols-2">
+                        <div className="grid gap-6 sm:grid-cols-2 relative z-10">
                             <div className="space-y-2">
-                                <Label htmlFor="raisedFor" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                <label htmlFor="raisedFor" className="text-[9px] font-black uppercase tracking-widest text-slate-400 block">
                                     Contract Raised For
-                                </Label>
+                                </label>
                                 <select 
                                     id="raisedFor"
-                                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                                     required
+                                    className="w-full h-12 px-4 rounded-xl border-2 border-slate-200 bg-white text-[10px] font-black uppercase tracking-widest outline-none text-slate-700 focus:border-indigo-400 transition-all cursor-pointer shadow-sm hover:border-slate-300"
                                 >
                                     <option value="">Select Allocation...</option>
                                     <option value="nbcc_only">NBCC Only (Direct or Decision PMC)</option>
@@ -186,41 +185,42 @@ export default function RaiseContractPage() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="location" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                                <label htmlFor="location" className="text-[9px] font-black uppercase tracking-widest text-slate-400 block">
                                     Building / Site Location
-                                </Label>
-                                <div className="relative">
-                                    <Building2 className="absolute left-3 top-3 h-4 w-4 text-muted-foreground/70" />
-                                    <Input 
+                                </label>
+                                <div className="relative flex">
+                                    <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                                    <input 
                                         id="location"
+                                        type="text"
                                         placeholder="e.g. Block B, Hall 3 Foyer, Open Plaza"
                                         required
-                                        className="pl-9 focus-visible:ring-primary"
+                                        className="w-full h-12 pl-11 pr-4 rounded-xl border-2 border-slate-200 bg-white text-[10px] font-black uppercase tracking-widest outline-none text-slate-700 focus:border-indigo-400 focus:bg-white transition-all shadow-sm placeholder:text-slate-400"
                                     />
                                 </div>
                             </div>
                         </div>
 
                         {/* Description Field */}
-                        <div className="space-y-2">
-                            <Label htmlFor="description" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                        <div className="space-y-2 relative z-10">
+                            <label htmlFor="description" className="text-[9px] font-black uppercase tracking-widest text-slate-400 block">
                                 Detailed Scope of Work
-                            </Label>
-                            <Textarea 
+                            </label>
+                            <textarea 
                                 id="description"
                                 placeholder="Describe technical criteria, dimensions, required certifications, structural specifications..."
                                 rows={4}
                                 required
-                                className="focus-visible:ring-primary"
+                                className="w-full p-4 rounded-xl border-2 border-slate-200 bg-white text-[10px] font-black uppercase tracking-widest outline-none text-slate-700 focus:border-indigo-400 focus:bg-white transition-all shadow-sm placeholder:text-slate-400 min-h-[120px]"
                             />
                         </div>
 
                         {/* Document Upload field */}
-                        <div className="space-y-2">
-                            <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                        <div className="space-y-2 relative z-10">
+                            <label className="text-[9px] font-black uppercase tracking-widest text-slate-400 block">
                                 Attach Layouts / Technical Specifications
-                            </Label>
-                            <div className="border-2 border-dashed border-border rounded-lg p-6 bg-card/40 flex flex-col items-center justify-center text-center hover:bg-muted/30 transition-colors relative">
+                            </label>
+                            <div className="border-2 border-dashed border-slate-300 rounded-[24px] p-8 bg-white flex flex-col items-center justify-center text-center hover:border-indigo-400 transition-all relative cursor-pointer shadow-sm">
                                 <input 
                                     type="file" 
                                     id="fileUpload" 
@@ -228,44 +228,48 @@ export default function RaiseContractPage() {
                                     className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                                     accept=".pdf,.doc,.docx,.jpg,.png"
                                 />
-                                <Upload className="h-8 w-8 text-muted-foreground mb-2" />
-                                <span className="text-sm font-medium text-foreground">
+                                <Upload className="h-10 w-10 text-slate-400 mb-3 group-hover:scale-110 transition-transform" />
+                                <span className="text-xs font-black uppercase tracking-widest text-slate-700">
                                     {fileName ? fileName : "Drag & drop files here, or click to browse"}
                                 </span>
-                                <span className="text-[10px] text-muted-foreground mt-1">
+                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">
                                     Supports PDF, DOC, PNG, JPG up to 15MB
                                 </span>
                             </div>
                         </div>
 
                         {/* Safety Disclaimer */}
-                        <div className="rounded-lg bg-amber-500/10 border border-amber-500/20 p-4 flex gap-3 items-start">
-                            <AlertCircle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
-                            <div className="text-xs text-amber-800 dark:text-amber-400 leading-relaxed">
-                                <strong>System Notice:</strong> Raising this contract triggers a digital workflow immediately. Depending on your allocation parameter, it will become instantly visible inside NBCC and Shapoorji operation terminals for estimation and engineer assignments.
+                        <div className="rounded-[24px] border-2 bg-amber-50 border-amber-200 p-6 flex gap-4 items-start relative z-10 shadow-sm">
+                            <AlertCircle className="h-6 w-6 text-amber-600 shrink-0 mt-0.5 animate-pulse" />
+                            <div className="space-y-1">
+                                <p className="text-[10px] font-black uppercase tracking-widest text-amber-800 leading-none">System Dispatch Notice</p>
+                                <p className="text-xs text-amber-800 leading-relaxed font-bold">
+                                    Raising this contract triggers an automated structural workflow. Allocation parameters automatically broadcast parameters into live PMC/Contractor terminal boards.
+                                </p>
                             </div>
                         </div>
 
                     </CardContent>
 
-                    <CardFooter className="border-t border-border/60 pt-6 flex justify-end gap-3">
+                    {/* Footer Actions */}
+                    <div className="p-10 border-t border-slate-100 bg-slate-50/50 flex justify-end gap-4 relative z-10">
                         <Button 
                             type="button" 
                             variant="outline" 
-                            onClick={() => router.push("/itpo/dashboard")}
-                            className="text-muted-foreground hover:text-foreground"
+                            onClick={() => router.push("/itpo")}
+                            className="h-14 px-8 rounded-2xl border-2 border-slate-200 font-black uppercase tracking-widest text-[10px] text-slate-700 bg-white hover:bg-slate-50 transition-all shadow-sm"
                         >
                             Cancel
                         </Button>
                         <Button 
                             type="submit" 
                             disabled={isLoading}
-                            className="gap-2"
+                            className="h-14 px-10 rounded-2xl bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-black uppercase tracking-widest text-[10px] shadow-lg hover:shadow-indigo-200 transition-all gap-2 border-none"
                         >
-                            <PlusCircle className="h-4 w-4" />
-                            {isLoading ? "Broadcasting Contract..." : "Raise Contract & Distribute"}
+                            <PlusCircle className="h-5 w-5" />
+                            {isLoading ? "Submitting..." : "Raise Contract"}
                         </Button>
-                    </CardFooter>
+                    </div>
                 </form>
             </Card>
         </div>

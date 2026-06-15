@@ -12,18 +12,25 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // Read the cookie securely on the server
   const cookieStore = await cookies();
   const userRoleCookie = cookieStore.get("user-role")?.value;
-  
+
   // Cast value to UserRole, fallback to "itpo" if cookie is not yet set
   const currentRole: UserRole = (userRoleCookie as UserRole) || "shapoorji";
 
   return (
     <html lang="en">
-      <body className="antialiased min-h-screen bg-background text-foreground flex">
+      <body className="antialiased min-h-screen bg-muted text-foreground flex">
         {/* Render the Dynamic Sidebar server-side */}
         <RoleBasedSidebar currentRole={currentRole} />
 
         {/* Content canvas adjusted to fit sidebar offset */}
-        <div className="flex-1 pl-64 flex flex-col min-h-screen">
+        <div
+          className="
+          flex-1 pl-64 flex flex-col min-h-screen
+          bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]
+          bg-fixed
+          bg-repeat
+        "
+        >
           {children}
         </div>
       </body>
