@@ -1,35 +1,30 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { 
   Camera, 
   Send, 
   Users, 
   Clock, 
-  CheckCircle, 
+  CheckCircle2, 
   AlertTriangle, 
-  Image as ImageIcon,
-  Plus,
   Trash2,
   Calendar,
   FileText,
-  TrendingUp,
-  MapPin
+  Activity,
+  MapPin,
+  Building2,
+  PlusCircle,
+  History,
+  HardHat
 } from "lucide-react";
-
-// --- Framer Motion Variants ---
-const fadeInUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 }
-};
-
-const stagger = {
-  visible: { transition: { staggerChildren: 0.1 } }
-};
+import { cn } from "@/lib/utils";
 
 export default function DailyProgressPage() {
-  const [images, setImages] = useState<string[]>([]);
   const [progress, setProgress] = useState(50);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -40,201 +35,200 @@ export default function DailyProgressPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] p-6 lg:p-10 text-slate-800 font-sans">
+    <div className="space-y-12 animate-in fade-in duration-1000 pb-20 font-sans selection:bg-indigo-100 p-10">
       
-      {/* Header Section */}
-      <motion.div 
-        initial="hidden" 
-        animate="visible" 
-        variants={fadeInUp}
-        className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6"
-      >
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <span className="px-3 py-1 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-md">
-              Field Report
-            </span>
+      {/* APEX SECRETARIAT HEADER */}
+      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6 relative">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border-2 border-indigo-200">
+            <Activity size={14} className="animate-pulse" /> Field Execution Report
           </div>
-          <h1 className="text-4xl font-black tracking-tight text-slate-800">
-            Daily Progress <span className="text-indigo-600">Logger</span>
-          </h1>
-          <p className="text-slate-500 font-medium mt-1 flex items-center gap-2">
-            <Calendar size={16} /> {new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
+          <h1 className="text-6xl font-black text-slate-800 tracking-tighter uppercase leading-none">Daily <span className="text-indigo-600">Logger</span></h1>
+          <p className="text-slate-500 font-medium text-xl italic underline underline-offset-8 decoration-indigo-200">
+            Official work log submission for PMC oversight and material verification.
           </p>
         </div>
 
-        <div className="flex items-center gap-3 bg-white p-2 rounded-2xl shadow-xl shadow-slate-200/50 border border-white">
-            <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-700 rounded-xl">
-                <Clock size={18} className="animate-pulse" />
-                <span className="text-sm font-bold">Shift: 09:00 AM - 06:00 PM</span>
-            </div>
+        <div className="flex gap-4">
+          <div className="h-16 px-8 rounded-3xl border-2 border-slate-100 bg-white flex items-center gap-4 shadow-xl">
+             <div className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
+             <div className="flex flex-col">
+               <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Active Shift</span>
+               <span className="text-[11px] font-bold text-slate-700">09:00 AM - 06:00 PM</span>
+             </div>
+          </div>
         </div>
-      </motion.div>
+      </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         
         {/* Left Column: Form Section */}
-        <motion.div 
-          variants={stagger} 
-          initial="hidden" 
-          animate="visible" 
-          className="lg:col-span-2 space-y-8"
-        >
-          <form onSubmit={handleSubmit} className="space-y-8">
+        <div className="lg:col-span-2 space-y-10">
+          <form onSubmit={handleSubmit} className="space-y-10">
             
-            {/* Project Selection Card */}
-            <div className="bg-white/70 backdrop-blur-xl border border-white p-8 rounded-[2.5rem] shadow-2xl shadow-slate-200/40">
-              <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-                <FileText className="text-indigo-600" /> Contract Details
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-2">
-                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Active Assignment</label>
-                  <select className="w-full p-4 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold focus:ring-2 focus:ring-indigo-500/20 focus:outline-none appearance-none">
-                    <option>CON-7721: Electrical Panel Hall 3</option>
-                    <option>CON-8102: Plumbing Zone B</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Work Location</label>
-                  <div className="relative">
-                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-                    <input disabled value="Bharat Mandapam - Hall 3, Level 1" className="w-full p-4 pl-12 bg-slate-100 border border-slate-100 rounded-2xl text-sm font-bold text-slate-500" />
+            {/* SECTION 1: CONTRACT SPECIFICS */}
+            <Card className="rounded-[48px] border-none shadow-xl overflow-hidden bg-white">
+              <CardHeader className="p-0">
+                <div className="p-8 bg-gradient-to-r from-slate-800 to-indigo-950 text-white relative overflow-hidden">
+                  <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+                  <div className="relative z-10 flex items-center gap-4">
+                    <FileText className="text-indigo-400" />
+                    <CardTitle className="text-lg font-black uppercase tracking-widest">Contract Specifics</CardTitle>
                   </div>
                 </div>
-              </div>
-            </div>
+              </CardHeader>
+              <CardContent className="p-10 grid grid-cols-1 md:grid-cols-2 gap-8 bg-slate-50/30">
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Active Assignment</label>
+                  <select className="w-full h-14 px-5 bg-white border-2 border-slate-100 rounded-2xl text-xs font-black focus:border-indigo-500 focus:outline-none appearance-none shadow-sm transition-all uppercase tracking-wider">
+                    <option>CON-7721: ELECTRICAL PANEL HALL 3</option>
+                    <option>CON-8102: PLUMBING ZONE B</option>
+                  </select>
+                </div>
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Work Location</label>
+                  <div className="relative">
+                    <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 text-indigo-500" size={18} />
+                    <input disabled value="BHARAT MANDAPAM - HALL 3, LEVEL 1" className="w-full h-14 pl-14 bg-slate-100 border-2 border-slate-100 rounded-2xl text-xs font-black text-slate-500 uppercase tracking-wider" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
-            {/* Daily Update & Manpower */}
-            <div className="bg-gradient-to-br from-indigo-50 via-white to-white border border-white p-8 rounded-[2.5rem] shadow-2xl shadow-slate-200/40">
-              <h3 className="text-xl font-bold mb-6">Work Log & Resources</h3>
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Today's Achievements</label>
+            {/* SECTION 2: EXECUTION METRICS */}
+            <Card className="rounded-[48px] border-none shadow-xl overflow-hidden bg-white">
+              <CardHeader className="p-0">
+                <div className="p-8 bg-gradient-to-r from-slate-800 to-slate-900 text-white relative overflow-hidden">
+                   <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+                   <div className="relative z-10 flex items-center gap-4">
+                    <Activity className="text-emerald-400" />
+                    <CardTitle className="text-lg font-black uppercase tracking-widest">Execution Metrics</CardTitle>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="p-10 space-y-8 bg-slate-50/30">
+                <div className="space-y-3">
+                  <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Work Achievement Description</label>
                   <textarea 
-                    placeholder="Describe what was completed today..." 
+                    placeholder="ENTER DETAILED LOG OF COMPLETED TASKS..." 
                     rows={4}
-                    className="w-full p-5 bg-white border border-slate-100 rounded-3xl text-sm focus:ring-2 focus:ring-indigo-500/20 focus:outline-none shadow-inner"
+                    className="w-full p-6 bg-white border-2 border-slate-100 rounded-[32px] text-xs font-bold focus:border-indigo-500 focus:outline-none shadow-sm transition-all uppercase tracking-widest"
                   />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
-                    <div className="flex items-center gap-2 text-indigo-600 mb-2">
-                      <Users size={16} /> <span className="text-[10px] font-black uppercase">Skilled Labor</span>
+                  {[
+                    { label: "Skilled Labor", icon: Users, color: "text-indigo-600" },
+                    { label: "Unskilled", icon: Users, color: "text-amber-600" },
+                    { label: "Incidents", icon: AlertTriangle, color: "text-rose-600" }
+                  ].map((item, i) => (
+                    <div key={i} className="p-6 bg-white rounded-3xl border-2 border-slate-100 shadow-sm group hover:border-indigo-200 transition-all">
+                      <div className={cn("flex items-center gap-2 mb-3", item.color)}>
+                        <item.icon size={16} /> 
+                        <span className="text-[9px] font-black uppercase tracking-widest">{item.label}</span>
+                      </div>
+                      <input type="number" placeholder="0" className="text-3xl font-black w-full outline-none bg-transparent" />
                     </div>
-                    <input type="number" placeholder="0" className="text-2xl font-black w-full outline-none" />
-                  </div>
-                  <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
-                    <div className="flex items-center gap-2 text-amber-600 mb-2">
-                      <Users size={16} /> <span className="text-[10px] font-black uppercase">Unskilled</span>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* SECTION 3: MEDIA VERIFICATION */}
+            <Card className="rounded-[48px] border-none shadow-xl overflow-hidden bg-white">
+              <div className="p-10 bg-slate-50/30">
+                <div className="flex justify-between items-center mb-8">
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Site Media Verification</h3>
+                  <Badge className="bg-indigo-100 text-indigo-700 border-none font-black text-[9px]">MAX 5 PHOTOS</Badge>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                  <button type="button" className="aspect-square rounded-[32px] border-4 border-dashed border-slate-200 flex flex-col items-center justify-center gap-3 text-slate-400 hover:border-indigo-400 hover:text-indigo-600 hover:bg-white transition-all group">
+                    <div className="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center group-hover:bg-indigo-50 transition-colors">
+                      <Camera size={24} />
                     </div>
-                    <input type="number" placeholder="0" className="text-2xl font-black w-full outline-none" />
-                  </div>
-                  <div className="p-4 bg-white rounded-2xl border border-slate-100 shadow-sm">
-                    <div className="flex items-center gap-2 text-rose-600 mb-2">
-                      <AlertTriangle size={16} /> <span className="text-[10px] font-black uppercase">Incidents</span>
+                    <span className="text-[9px] font-black uppercase tracking-widest">Add Frame</span>
+                  </button>
+                  <div className="aspect-square rounded-[32px] bg-slate-200 overflow-hidden relative group border-4 border-white shadow-lg">
+                    <img src="https://images.unsplash.com/photo-1541888946425-d81bb19480c5?auto=format&fit=crop&q=80&w=300" alt="work" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-indigo-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                      <Trash2 className="text-white cursor-pointer" size={24} />
                     </div>
-                    <input type="number" placeholder="0" className="text-2xl font-black w-full outline-none" />
                   </div>
                 </div>
               </div>
-            </div>
+            </Card>
 
-            {/* Media Upload */}
-            <div className="bg-white/70 backdrop-blur-xl border border-white p-8 rounded-[2.5rem] shadow-2xl shadow-slate-200/40">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold">Site Media</h3>
-                <span className="text-[10px] font-bold text-slate-400 uppercase">Max 5 Photos</span>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <button type="button" className="aspect-square rounded-3xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center gap-2 text-slate-400 hover:border-indigo-400 hover:text-indigo-600 hover:bg-indigo-50 transition-all">
-                  <Camera size={24} />
-                  <span className="text-[10px] font-bold uppercase">Add Photo</span>
-                </button>
-                {/* Mock Uploaded Images */}
-                <div className="aspect-square rounded-3xl bg-slate-100 overflow-hidden relative group">
-                  <img src="https://images.unsplash.com/photo-1541888946425-d81bb19480c5?auto=format&fit=crop&q=80&w=200" alt="work" className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                    <Trash2 className="text-white cursor-pointer" size={20} />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Action Button */}
-            <button 
+            <Button 
               disabled={isSubmitting}
-              className={`w-full py-5 rounded-[2rem] font-black uppercase tracking-[0.2em] text-sm shadow-2xl transition-all flex items-center justify-center gap-3 ${
-                isSubmitting ? "bg-slate-400" : "bg-slate-900 text-white hover:bg-indigo-600 hover:shadow-indigo-200"
-              }`}
+              className={cn(
+                "w-full h-20 rounded-[32px] font-black uppercase tracking-[0.3em] text-[11px] shadow-2xl transition-all flex items-center justify-center gap-4 border-none",
+                isSubmitting ? "bg-slate-400" : "bg-slate-900 text-white hover:bg-indigo-600"
+              )}
             >
-              {isSubmitting ? "Uploading Logs..." : <>Submit Daily Progress <Send size={18} /></>}
-            </button>
+              {isSubmitting ? "SYNCING WITH SECRETARIAT..." : <>SUBMIT DAILY PROGRESS LOG <Send size={20} /></>}
+            </Button>
           </form>
-        </motion.div>
+        </div>
 
-        {/* Right Column: Status & History */}
-        <motion.div 
-          variants={fadeInUp} 
-          initial="hidden" 
-          animate="visible" 
-          className="space-y-8"
-        >
-          {/* Progress Card */}
-          <div className="bg-white/70 backdrop-blur-xl border border-white p-8 rounded-[2.5rem] shadow-2xl shadow-slate-200/40 relative overflow-hidden">
-            <div className="relative z-10">
-              <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-                <TrendingUp size={20} className="text-emerald-500" /> Overall Progress
-              </h3>
-              <div className="text-5xl font-black text-slate-800 mb-4">{progress}%</div>
-              <input 
-                type="range" 
-                min="0" 
-                max="100" 
-                value={progress} 
-                onChange={(e) => setProgress(parseInt(e.target.value))}
-                className="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-indigo-600 mb-4" 
-              />
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Manually estimate completion</p>
+        {/* Right Column: Status & Audit Trail */}
+        <div className="space-y-10">
+          
+          {/* OVERALL COMPLETION TRACKER */}
+          <Card className="rounded-[40px] border-none shadow-xl bg-white overflow-hidden group">
+            <div className="p-8 bg-gradient-to-br from-indigo-600 to-blue-700 text-white relative">
+               <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/diagonal-striped-brick.png')]" />
+               <div className="relative z-10 space-y-6">
+                  <h3 className="text-[10px] font-black uppercase tracking-[0.2em] opacity-80">Completion Estimate</h3>
+                  <div className="text-6xl font-black tracking-tighter">{progress}%</div>
+                  <input 
+                    type="range" min="0" max="100" value={progress} 
+                    onChange={(e) => setProgress(parseInt(e.target.value))}
+                    className="w-full h-2 bg-white/20 rounded-lg appearance-none cursor-pointer accent-white" 
+                  />
+                  <p className="text-[9px] font-bold uppercase tracking-widest opacity-60 italic">Manual field assessment by engineer</p>
+               </div>
             </div>
-            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-indigo-500/5 rounded-full blur-3xl" />
-          </div>
+          </Card>
 
-          {/* Recent Logs Timeline */}
-          <div className="bg-slate-900 text-white p-8 rounded-[2.5rem] shadow-2xl shadow-slate-900/20 relative overflow-hidden border border-slate-800">
-            <h3 className="text-lg font-bold mb-6">Recent Logs</h3>
-            <div className="space-y-6 relative border-l border-white/10 ml-2 pl-6">
+          {/* AUDIT TRAIL LOG */}
+          <Card className="rounded-[40px] border-none shadow-xl bg-slate-900 text-white overflow-hidden">
+            <div className="p-6 border-b border-white/5 flex items-center justify-between">
+               <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-indigo-400">Recent Logs</h3>
+               <History size={16} className="text-slate-500" />
+            </div>
+            <div className="p-8 space-y-8 relative">
+              <div className="absolute left-10 top-8 bottom-8 w-px bg-white/10" />
               {[
-                { date: "Yesterday", status: "Approved", activity: "Main panel wiring completed" },
-                { date: "22 Oct", status: "Flagged", activity: "Material shortage: 2.5mm wire" },
-                { date: "21 Oct", status: "Approved", activity: "Internal conduit mapping done" },
+                { date: "YESTERDAY", status: "APPROVED", activity: "MAIN PANEL WIRING COMPLETED", color: "bg-emerald-500" },
+                { date: "22 OCT", status: "FLAGGED", activity: "MATERIAL SHORTAGE: 2.5MM WIRE", color: "bg-rose-500" },
+                { date: "21 OCT", status: "APPROVED", activity: "INTERNAL CONDUIT MAPPING DONE", color: "bg-emerald-500" },
               ].map((log, i) => (
-                <div key={i} className="relative">
-                  <div className={`absolute -left-[1.9rem] top-1 w-2.5 h-2.5 rounded-full ${log.status === 'Flagged' ? 'bg-rose-500' : 'bg-emerald-500'}`} />
-                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-tighter mb-1">{log.date} • {log.status}</p>
-                  <p className="text-sm font-bold text-slate-200 leading-tight">{log.activity}</p>
+                <div key={i} className="relative pl-8">
+                  <div className={cn("absolute left-[-5px] top-1.5 w-2.5 h-2.5 rounded-full ring-4 ring-slate-900", log.color)} />
+                  <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1">{log.date} • {log.status}</p>
+                  <p className="text-xs font-bold text-slate-200 leading-relaxed uppercase tracking-tight">{log.activity}</p>
                 </div>
               ))}
             </div>
-            <button className="w-full mt-8 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all">
-              View History
-            </button>
-          </div>
+            <Button className="w-full h-14 bg-white/5 hover:bg-white/10 text-white rounded-none border-t border-white/5 text-[9px] font-black uppercase tracking-widest">
+              View Global History
+            </Button>
+          </Card>
 
-          {/* Reminder Card */}
-          <div className="bg-amber-50 border border-amber-100 p-6 rounded-[2rem] flex items-start gap-4">
-            <div className="p-3 bg-amber-200 text-amber-700 rounded-2xl">
+          {/* SAFETY REMINDER */}
+          <div className="bg-amber-50 border-2 border-amber-200 p-8 rounded-[40px] flex items-start gap-5">
+            <div className="h-12 w-12 rounded-2xl bg-amber-200 text-amber-700 flex items-center justify-center shrink-0">
               <AlertTriangle size={24} />
             </div>
             <div>
-              <p className="text-sm font-black text-amber-800 uppercase tracking-tight">Engineer's Note</p>
-              <p className="text-xs font-bold text-amber-700/80 mt-1 leading-relaxed">
-                Ensure all safety protocols are logged. High voltage testing scheduled for tomorrow.
+              <p className="text-[10px] font-black text-amber-800 uppercase tracking-widest">Safety Protocol</p>
+              <p className="text-xs font-bold text-amber-700/80 mt-2 leading-relaxed uppercase">
+                High voltage testing scheduled for tomorrow. Ensure all safety barricades are logged.
               </p>
             </div>
           </div>
-        </motion.div>
+        </div>
+
       </div>
     </div>
   );
