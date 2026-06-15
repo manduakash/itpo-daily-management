@@ -3,13 +3,13 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { 
-  LayoutDashboard, 
-  PlusCircle, 
-  FolderOpen, 
-  ClipboardCheck, 
-  Activity, 
-  FileBarChart2, 
+import {
+  LayoutDashboard,
+  PlusCircle,
+  FolderOpen,
+  ClipboardCheck,
+  Activity,
+  FileBarChart2,
   Building2,
   Users,
   Forward,
@@ -18,138 +18,358 @@ import {
   FileText,
   Calendar,
   LogOut,
-  User
+  User,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type UserRole = "itpo" | "nbcc" | "shapoorji" | "nbcc_engineer" | "shapoorji_engineer";
+export type UserRole =
+  | "itpo"
+  | "nbcc"
+  | "shapoorji"
+  | "nbcc_engineer"
+  | "shapoorji_engineer";
 
-const roleProfiles: Record<UserRole, { label: string; org: string; color: string }> = {
-  itpo: { label: "ITPO Officer", org: "ITPO (Owner)", color: "bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20" },
-  nbcc: { label: "Project Manager", org: "NBCC (PMC/Developer)", color: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20" },
-  shapoorji: { label: "Operations Head", org: "Shapoorji (Construction)", color: "bg-teal-500/10 text-teal-600 dark:text-teal-400 border-teal-500/20" },
-  nbcc_engineer: { label: "Site Engineer", org: "NBCC Engineering Team", color: "bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20" },
-  shapoorji_engineer: { label: "Field Lead", org: "Shapoorji Field Team", color: "bg-sky-500/10 text-sky-600 dark:text-sky-400 border-sky-500/20" },
+const roleProfiles: Record<
+  UserRole,
+  {
+    label: string;
+    org: string;
+    accent: string;
+  }
+> = {
+  itpo: {
+    label: "ITPO Officer",
+    org: "ITPO (Owner)",
+    accent: "#B8C0FF",
+  },
+  nbcc: {
+    label: "Project Manager",
+    org: "NBCC (PMC/Developer)",
+    accent: "#FFD6A5",
+  },
+  shapoorji: {
+    label: "Operations Head",
+    org: "Shapoorji (Construction)",
+    accent: "#BDE0A8",
+  },
+  nbcc_engineer: {
+    label: "Site Engineer",
+    org: "NBCC Engineering Team",
+    accent: "#A9D6E5",
+  },
+  shapoorji_engineer: {
+    label: "Field Lead",
+    org: "Shapoorji Field Team",
+    accent: "#E4C1F9",
+  },
 };
 
-const navigationMap: Record<UserRole, Array<{ name: string; href: string; icon: any; badge?: number }>> = {
+const navigationMap: Record<
+  UserRole,
+  Array<{ name: string; href: string; icon: any; badge?: number }>
+> = {
   itpo: [
     { name: "Dashboard", href: "/itpo/dashboard", icon: LayoutDashboard },
     { name: "Raise Contract", href: "/itpo/raise-contract", icon: PlusCircle },
     { name: "All Contracts", href: "/itpo/contracts", icon: FolderOpen },
-    { name: "Pending Approvals", href: "/itpo/approvals", icon: ClipboardCheck, badge: 3 },
+    {
+      name: "Pending Approvals",
+      href: "/itpo/approvals",
+      icon: ClipboardCheck,
+      badge: 3,
+    },
     { name: "Project Tracking", href: "/itpo/tracking", icon: Activity },
     { name: "Reports", href: "/itpo/reports", icon: FileBarChart2 },
   ],
+
   nbcc: [
     { name: "Dashboard", href: "/nbcc/dashboard", icon: LayoutDashboard },
-    { name: "Assigned Contracts", href: "/nbcc/assigned-contracts", icon: FolderOpen },
-    { name: "Contract Review", href: "/nbcc/contract-review", icon: ClipboardCheck, badge: 2 },
-    { name: "Engineer Allocation", href: "/nbcc/engineer-allocation", icon: Users },
-    { name: "Forward to Shapoorji", href: "/nbcc/forward-to-shapoorji", icon: Forward },
-    { name: "Ongoing Projects", href: "/nbcc/ongoing-projects", icon: Activity },
+    {
+      name: "Assigned Contracts",
+      href: "/nbcc/assigned-contracts",
+      icon: FolderOpen,
+    },
+    {
+      name: "Contract Review",
+      href: "/nbcc/contract-review",
+      icon: ClipboardCheck,
+      badge: 2,
+    },
+    {
+      name: "Engineer Allocation",
+      href: "/nbcc/engineer-allocation",
+      icon: Users,
+    },
+    {
+      name: "Forward to Shapoorji",
+      href: "/nbcc/forward-to-shapoorji",
+      icon: Forward,
+    },
+    {
+      name: "Ongoing Projects",
+      href: "/nbcc/ongoing-projects",
+      icon: Activity,
+    },
     { name: "Reports", href: "/nbcc/reports", icon: FileBarChart2 },
   ],
+
   shapoorji: [
     { name: "Dashboard", href: "/sapurji/dashboard", icon: LayoutDashboard },
-    { name: "Assigned Contracts", href: "/sapurji/assigned-contracts", icon: FolderOpen },
-    { name: "Estimations", href: "/sapurji/estimations", icon: Calculator, badge: 1 },
-    { name: "Assign Engineers", href: "/sapurji/assign-engineers", icon: Users },
-    { name: "Ongoing Projects", href: "/sapurji/ongoing-projects", icon: Activity },
-    { name: "Completion Reports", href: "/sapurji/completion-reports", icon: CheckCircle },
+    {
+      name: "Assigned Contracts",
+      href: "/sapurji/assigned-contracts",
+      icon: FolderOpen,
+    },
+    {
+      name: "Estimations",
+      href: "/sapurji/estimations",
+      icon: Calculator,
+      badge: 1,
+    },
+    {
+      name: "Assign Engineers",
+      href: "/sapurji/assign-engineers",
+      icon: Users,
+    },
+    {
+      name: "Ongoing Projects",
+      href: "/sapurji/ongoing-projects",
+      icon: Activity,
+    },
+    {
+      name: "Completion Reports",
+      href: "/sapurji/completion-reports",
+      icon: CheckCircle,
+    },
   ],
+
   nbcc_engineer: [
     { name: "Dashboard", href: "/nbcc-eng/dashboard", icon: LayoutDashboard },
-    { name: "My Assignments", href: "/nbcc-eng/my-assignment", icon: ClipboardCheck, badge: 4 },
-    { name: "Daily Progress", href: "/nbcc-eng/daily-progress", icon: Calendar },
-    { name: "Site Reports", href: "/nbcc-eng/site-report", icon: FileText },
-    { name: "Completion", href: "/nbcc-eng/completion", icon: CheckCircle },
+    {
+      name: "My Assignments",
+      href: "/nbcc-eng/my-assignment",
+      icon: ClipboardCheck,
+      badge: 4,
+    },
+    {
+      name: "Daily Progress",
+      href: "/nbcc-eng/daily-progress",
+      icon: Calendar,
+    },
+    {
+      name: "Site Reports",
+      href: "/nbcc-eng/site-report",
+      icon: FileText,
+    },
+    {
+      name: "Completion",
+      href: "/nbcc-eng/completion",
+      icon: CheckCircle,
+    },
   ],
+
   shapoorji_engineer: [
-    { name: "Dashboard", href: "/sapurji-eng/dashboard", icon: LayoutDashboard },
-    { name: "My Assignments", href: "/sapurji-eng/my-assingments", icon: ClipboardCheck, badge: 2 },
-    { name: "Daily Progress", href: "/sapurji-eng/daily-progress", icon: Calendar },
-    { name: "Site Reports", href: "/sapurji-eng/site-reports", icon: FileText },
-    { name: "Completion", href: "/sapurji-eng/completion", icon: CheckCircle },
+    {
+      name: "Dashboard",
+      href: "/sapurji-eng/dashboard",
+      icon: LayoutDashboard,
+    },
+    {
+      name: "My Assignments",
+      href: "/sapurji-eng/my-assingments",
+      icon: ClipboardCheck,
+      badge: 2,
+    },
+    {
+      name: "Daily Progress",
+      href: "/sapurji-eng/daily-progress",
+      icon: Calendar,
+    },
+    {
+      name: "Site Reports",
+      href: "/sapurji-eng/site-reports",
+      icon: FileText,
+    },
+    {
+      name: "Completion",
+      href: "/sapurji-eng/completion",
+      icon: CheckCircle,
+    },
   ],
 };
 
-export function RoleBasedSidebar({ currentRole }: { currentRole: UserRole }) {
+export function RoleBasedSidebar({
+  currentRole,
+}: {
+  currentRole: UserRole;
+}) {
   const pathname = usePathname();
   const router = useRouter();
-  const menuItems = navigationMap[currentRole] || [];
+
   const profile = roleProfiles[currentRole];
+  const menuItems = navigationMap[currentRole] || [];
 
   const handleSignOut = () => {
-    // Clear cookie and redirect to login page
-    document.cookie = "user-role=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-    router.push("/login");
+    document.cookie =
+      "user-role=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+    router.push("/");
   };
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-20 flex h-full w-64 flex-col border-r border-border bg-card text-card-foreground">
-      <div className="flex h-16 items-center px-6 border-b border-border gap-2.5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-          <Building2 className="h-5 w-5" />
-        </div>
-        <div className="flex flex-col">
-          <span className="text-sm font-semibold leading-none tracking-tight">Bharat Mandapam</span>
-          <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider mt-0.5">CMS Platform</span>
-        </div>
-      </div>
+    <aside className="fixed inset-y-0 left-0 z-30 w-64 overflow-hidden border-r border-white/10">
+      {/* Background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A] via-[#304dab] to-[#1E1B4B]" />
 
-      <div className="p-4 border-b border-border/60 bg-muted/30">
-        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Account Context</span>
-        <div className={cn("flex flex-col gap-1 rounded-lg border px-3 py-2 text-xs mt-1", profile?.color)}>
-          <span className="font-semibold">{profile?.label || "Unknown Role"}</span>
-          <span className="text-[10px] opacity-80 font-medium">{profile?.org || "System Access"}</span>
-        </div>
-      </div>
+      {/* Carbon Texture @ 20% */}
+      <div
+        className="
+          absolute inset-0
+          bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]
+          bg-repeat
+          opacity-20
+          pointer-events-none
+        "
+      />
 
-      <nav className="flex-1 space-y-1 px-4 py-4 overflow-y-auto">
-        {menuItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = pathname === item.href;
-          return (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={cn(
-                "flex items-center justify-between rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
-                isActive ? "bg-accent text-accent-foreground" : "text-muted-foreground"
-              )}
-            >
-              <div className="flex items-center gap-3">
-                <Icon className="h-4 w-4 shrink-0" />
-                <span>{item.name}</span>
-              </div>
-              {item.badge && (
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-slate-50">
-                  {item.badge}
-                </span>
-              )}
-            </Link>
-          );
-        })}
-      </nav>
-
-      <div className="mt-auto border-t border-border p-4">
-        <div className="flex items-center gap-3 rounded-lg p-2">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-secondary-foreground">
-            <User className="h-4 w-4" />
+      {/* Content */}
+      <div className="relative z-10 flex h-full flex-col text-white">
+        {/* Header */}
+        <div className="h-16 px-5 flex items-center gap-3 border-b border-white/10 backdrop-blur-sm">
+          <div className="h-10 w-10 rounded-xl bg-[#B8C0FF]/20 border border-[#B8C0FF]/20 flex items-center justify-center">
+            <Building2 className="h-5 w-5 text-[#B8C0FF]" />
           </div>
-          <div className="flex flex-col flex-1 min-w-0">
-            <span className="text-xs font-semibold truncate">Active Session</span>
-            <span className="text-[10px] text-muted-foreground truncate">{currentRole.toUpperCase()} Account</span>
+
+          <div>
+            <h2 className="text-sm font-semibold text-white">
+              Bharat Mandapam
+            </h2>
+
+            <p className="text-[10px] uppercase tracking-[0.18em] text-slate-400">
+              Contract Management
+            </p>
           </div>
         </div>
-        <button 
-          onClick={handleSignOut}
-          className="flex w-full items-center gap-2 rounded-md px-3 py-2 mt-2 text-xs font-medium text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
-        >
-          <LogOut className="h-3.5 w-3.5" />
-          <span>Sign Out</span>
-        </button>
+
+        {/* Role Card */}
+        <div className="p-4 border-b border-white/10">
+          <p className="mb-2 text-[10px] uppercase tracking-[0.18em] text-slate-400 font-semibold">
+            Account Context
+          </p>
+
+          <div
+            className="rounded-xl border p-3 backdrop-blur-md bg-white/[0.04]"
+            style={{
+              borderColor: `${profile.accent}40`,
+              backgroundColor: `${profile.accent}12`,
+            }}
+          >
+            <p className="text-xs font-semibold text-white">
+              {profile.label}
+            </p>
+
+            <p className="mt-1 text-[11px] text-slate-300">
+              {profile.org}
+            </p>
+          </div>
+        </div>
+
+        {/* Navigation */}
+        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1 custom-scrollbar">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+
+            const isActive =
+              pathname === item.href ||
+              pathname.startsWith(`${item.href}/`);
+
+            return (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={cn(
+                  `
+                  group
+                  flex items-center justify-between
+                  rounded-xl
+                  px-3 py-2.5
+                  text-sm
+                  transition-all
+                  duration-200
+                  `,
+                  isActive
+                    ? `
+                      bg-gradient-to-r
+                      from-[#B8C0FF]/25
+                      to-[#A9D6E5]/10
+                      border border-[#B8C0FF]/20
+                      text-white
+                      shadow-lg
+                    `
+                    : `
+                      text-slate-400
+                      hover:text-white
+                      hover:bg-white/5
+                    `
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  <Icon
+                    className={cn(
+                      "h-4 w-4",
+                      isActive
+                        ? "text-[#B8C0FF]"
+                        : "text-slate-500 group-hover:text-slate-300"
+                    )}
+                  />
+
+                  <span>{item.name}</span>
+                </div>
+
+                {item.badge && (
+                  <span className="flex h-5 min-w-5 items-center justify-center rounded-full bg-[#FFD6A5] px-1 text-[10px] font-bold text-slate-900">
+                    {item.badge}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Footer */}
+        <div className="border-t border-white/10 p-4 bg-black/10 backdrop-blur-sm">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center">
+              <User className="h-4 w-4 text-slate-300" />
+            </div>
+
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-semibold text-white truncate">
+                Active Session
+              </p>
+
+              <p className="text-[10px] uppercase tracking-wider text-slate-400 truncate">
+                {currentRole.replace("_", " ")}
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={handleSignOut}
+            className="
+              mt-3
+              flex w-full items-center gap-2
+              rounded-xl
+              px-3 py-2.5
+              text-sm text-slate-400
+              transition-all duration-200
+              hover:bg-[#FFB4A2]/10
+              hover:text-white
+            "
+          >
+            <LogOut className="h-4 w-4" />
+            <span>Sign Out</span>
+          </button>
+        </div>
       </div>
     </aside>
   );
