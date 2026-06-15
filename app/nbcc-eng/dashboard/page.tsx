@@ -12,7 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, 
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, AreaChart, Area
 } from "recharts";
 import {
@@ -60,7 +60,7 @@ const stats = [
     subtitle: "Awaiting Engineer Allocation",
     icon: Briefcase,
     color: "from-blue-500 to-indigo-600",
-    
+
   },
   {
     title: "Review Required",
@@ -69,7 +69,7 @@ const stats = [
     icon: Clock,
     color: "from-amber-500 to-orange-600",
     alert: true,
-    
+
   },
   {
     title: "In Execution",
@@ -77,15 +77,14 @@ const stats = [
     subtitle: "Active Field Operations",
     icon: HardHat,
     color: "from-emerald-500 to-teal-600",
-    
+
   },
-   {
+  {
     title: "sp Forwarded",
     value: "24",
     subtitle: "Awaiting Engineer Allocation",
     icon: Briefcase,
-    color: "from-blue-500 to-indigo-600",
-    
+    color: "from-purple-500 to-violet-600",
   },
 ];
 
@@ -109,7 +108,7 @@ export default function NBCCEngineeringDashboard() {
 
   return (
     <div className="space-y-12 animate-in fade-in duration-1000 pb-20 font-sans selection:bg-indigo-100 p-10">
-      
+
       {/* HEADER SECTION */}
       <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6 relative">
         <div className="space-y-2">
@@ -124,13 +123,13 @@ export default function NBCCEngineeringDashboard() {
         <div className="flex gap-4">
           <div className="relative hidden lg:block">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
-            <input 
-              type="text" 
-              placeholder="SEARCH CONTRACTS..." 
+            <input
+              type="text"
+              placeholder="SEARCH CONTRACTS..."
               className="h-16 pl-12 pr-6 rounded-3xl border-2 border-slate-100 font-black uppercase tracking-widest text-[10px] bg-white shadow-xl focus:outline-none focus:border-indigo-300 w-64 transition-all"
             />
           </div>
-          <Button 
+          <Button
             // onClick={() => router.push("/nbcc/allocate")}
             className="h-16 px-10 rounded-3xl bg-gradient-to-r from-slate-800 to-slate-950 text-white font-black uppercase tracking-widest text-[10px] shadow-2xl hover:shadow-[0_0_20px_theme(colors.slate.400)] transition-all gap-2 group border-none"
           >
@@ -169,7 +168,7 @@ export default function NBCCEngineeringDashboard() {
 
       {/* MAIN CONTENT SPLIT */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
+
         {/* Left Column */}
         <div className="lg:col-span-2 space-y-8">
           <Card className="rounded-[48px] border-none shadow-xl overflow-hidden bg-white">
@@ -194,9 +193,9 @@ export default function NBCCEngineeringDashboard() {
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={chartData} barGap={12}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                    <XAxis dataKey="name" axisLine={false} tickLine={false} fontSize={10} tick={{fill: '#64748b', fontWeight: 900}} dy={10} />
-                    <YAxis axisLine={false} tickLine={false} fontSize={10} tick={{fill: '#64748b'}} />
-                    <Tooltip cursor={{fill: '#f1f5f9'}} contentStyle={{ borderRadius: '24px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }} />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} fontSize={10} tick={{ fill: '#64748b', fontWeight: 900 }} dy={10} />
+                    <YAxis axisLine={false} tickLine={false} fontSize={10} tick={{ fill: '#64748b' }} />
+                    <Tooltip cursor={{ fill: '#f1f5f9' }} contentStyle={{ borderRadius: '24px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }} />
                     <Bar dataKey="nbcc" fill="#4f46e5" radius={[4, 4, 0, 0]} barSize={40} />
                     <Bar dataKey="sp" fill="#a855f7" radius={[4, 4, 0, 0]} barSize={40} />
                   </BarChart>
@@ -208,40 +207,40 @@ export default function NBCCEngineeringDashboard() {
           {/* Table Area */}
           <Card className="rounded-[48px] border-none shadow-xl overflow-hidden bg-white">
             <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-white">
-               <div className="flex items-center gap-3">
-                  <div className="h-2 w-2 rounded-full bg-indigo-600 animate-pulse" />
-                  <h3 className="text-sm font-black uppercase tracking-widest text-slate-800">Critical Review Queue</h3>
-               </div>
-               <Button variant="ghost" className="text-indigo-600 font-black text-[10px] uppercase tracking-widest gap-1">
-                 Full Ledger <ChevronRight size={14} />
-               </Button>
-             </div>
-             <Table>
-               <TableBody>
-                 {[
-                   { id: "NB-88", title: "Facade Lighting - Gate 2", type: "Electrical", scale: "Small", status: "Review" },
-                   { id: "NB-92", title: "HVAC Central Plant Repair", type: "Mechanical", scale: "Large", status: "Forwarded" },
-                   { id: "NB-10", title: "VIP Lounge Flooring", type: "Civil", scale: "Small", status: "Execution" },
-                 ].map((item, i) => (
-                   <TableRow key={i} className="hover:bg-slate-50 transition-all border-slate-50 group">
-                     <TableCell className="pl-10 py-6">
-                        <span className="font-mono text-[10px] font-black text-indigo-700 bg-indigo-50 px-2 py-1 rounded-md">{item.id}</span>
-                     </TableCell>
-                     <TableCell>
-                       <p className="font-black text-slate-800 text-sm uppercase tracking-tight">{item.title}</p>
-                       <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{item.type}</p>
-                     </TableCell>
-                     <TableCell className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{item.scale}</TableCell>
-                     <TableCell><NBCCStatusBadge status={item.status} /></TableCell>
-                     <TableCell className="pr-10 text-right">
-                       <Button size="icon" variant="ghost" className="rounded-xl hover:bg-indigo-50 text-indigo-600">
-                         <ArrowUpRight size={18} />
-                       </Button>
-                     </TableCell>
-                   </TableRow>
-                 ))}
-               </TableBody>
-             </Table>
+              <div className="flex items-center gap-3">
+                <div className="h-2 w-2 rounded-full bg-indigo-600 animate-pulse" />
+                <h3 className="text-sm font-black uppercase tracking-widest text-slate-800">Critical Review Queue</h3>
+              </div>
+              <Button variant="ghost" className="text-indigo-600 font-black text-[10px] uppercase tracking-widest gap-1">
+                Full Ledger <ChevronRight size={14} />
+              </Button>
+            </div>
+            <Table>
+              <TableBody>
+                {[
+                  { id: "NB-88", title: "Facade Lighting - Gate 2", type: "Electrical", scale: "Small", status: "Review" },
+                  { id: "NB-92", title: "HVAC Central Plant Repair", type: "Mechanical", scale: "Large", status: "Forwarded" },
+                  { id: "NB-10", title: "VIP Lounge Flooring", type: "Civil", scale: "Small", status: "Execution" },
+                ].map((item, i) => (
+                  <TableRow key={i} className="hover:bg-slate-50 transition-all border-slate-50 group">
+                    <TableCell className="pl-10 py-6">
+                      <span className="font-mono text-[10px] font-black text-indigo-700 bg-indigo-50 px-2 py-1 rounded-md">{item.id}</span>
+                    </TableCell>
+                    <TableCell>
+                      <p className="font-black text-slate-800 text-sm uppercase tracking-tight">{item.title}</p>
+                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{item.type}</p>
+                    </TableCell>
+                    <TableCell className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{item.scale}</TableCell>
+                    <TableCell><NBCCStatusBadge status={item.status} /></TableCell>
+                    <TableCell className="pr-10 text-right">
+                      <Button size="icon" variant="ghost" className="rounded-xl hover:bg-indigo-50 text-indigo-600">
+                        <ArrowUpRight size={18} />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </Card>
         </div>
 
@@ -255,7 +254,7 @@ export default function NBCCEngineeringDashboard() {
                 <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-indigo-400">Field Allocation</h3>
                 <Construction size={20} className="text-slate-500" />
               </div>
-              
+
               <div className="space-y-6">
                 {[
                   { name: "Team Civil Alpha", status: "On Site", progress: 85, color: "bg-indigo-500" },
@@ -293,25 +292,25 @@ export default function NBCCEngineeringDashboard() {
               </div>
               <Activity size={18} className="text-white/70" />
             </div>
-            
+
             <div className="p-8 bg-slate-50/30">
-               <div className="h-32 w-full">
+              <div className="h-32 w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={[{v:10},{v:40},{v:25},{v:50},{v:45},{v:80}]}>
+                  <AreaChart data={[{ v: 10 }, { v: 40 }, { v: 25 }, { v: 50 }, { v: 45 }, { v: 80 }]}>
                     <defs>
                       <linearGradient id="colorEff" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <Area type="monotone" dataKey="v" stroke="#10b981" strokeWidth={3} fill="url(#colorEff)" />
                   </AreaChart>
                 </ResponsiveContainer>
-               </div>
-               <div className="mt-6 flex justify-between items-center bg-white border border-slate-100 p-4 rounded-2xl shadow-sm">
-                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Efficiency Score</span>
-                  <span className="text-2xl font-black text-emerald-600 tracking-tighter">92.8%</span>
-               </div>
+              </div>
+              <div className="mt-6 flex justify-between items-center bg-white border border-slate-100 p-4 rounded-2xl shadow-sm">
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Efficiency Score</span>
+                <span className="text-2xl font-black text-emerald-600 tracking-tighter">92.8%</span>
+              </div>
             </div>
           </Card>
         </div>
