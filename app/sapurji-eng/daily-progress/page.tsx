@@ -41,7 +41,7 @@ export default function DailyProgress() {
   const removePhoto = (id: number) => setPhotos(photos.filter(p => p !== id));
 
   return (
-    <div className="space-y-12 animate-in fade-in duration-1000 pb-20 font-sans selection:bg-indigo-100 p-10 bg-[#fcfdfe]">
+    <div className="space-y-12 animate-in fade-in duration-1000 pb-20 font-sans selection:bg-indigo-100 p-10">
       
       {/* APEX SECRETARIAT HEADER */}
       <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6 relative">
