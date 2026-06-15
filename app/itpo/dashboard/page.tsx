@@ -242,7 +242,7 @@ export default function ITPODashboard() {
   );
 
   return (
-    <div className="space-y-5 pb-10 bg-[#f8fafc] text-[#0f172a] min-h-screen relative font-sans selection:bg-[#B8C0FF]/40 p-6 md:p-8">
+    <div className="space-y-5 pb-10  text-[#0f172a] min-h-screen relative font-sans selection:bg-[#B8C0FF]/40 p-6 md:p-8">
       
       {/* Subtle Pattern Textures */}
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.015] pointer-events-none z-0" />

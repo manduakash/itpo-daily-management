@@ -74,7 +74,7 @@ export default function RaiseContractPage() {
   };
 
   return (
-    <div className="max-w-[1600px] mx-auto px-6 py-5 space-y-5 bg-[#f8fafc] text-[#0f172a] min-h-screen relative font-sans selection:bg-[#B8C0FF]/40">
+    <div className="max-w-[1600px] mx-auto px-6 py-5 space-y-5  text-[#0f172a] min-h-screen relative font-sans selection:bg-[#B8C0FF]/40">
       
       {/* Background textures overlay */}
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.015] pointer-events-none z-0" />

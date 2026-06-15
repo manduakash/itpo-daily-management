@@ -279,7 +279,7 @@ export default function PremiumPastelDashboard() {
   const currentSelectedContract = contracts.find((c) => c.id === selectedId) || contracts[0];
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-[#0f172a] flex flex-row relative antialiased selection:bg-[#B8C0FF]/40 selection:text-slate-900">
+    <div className="min-h-screen  text-[#0f172a] flex flex-row relative antialiased selection:bg-[#B8C0FF]/40 selection:text-slate-900">
       
       {/* 
         Background Textures
