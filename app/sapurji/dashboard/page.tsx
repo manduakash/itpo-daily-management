@@ -2,343 +2,242 @@
 
 import React, { useState, useEffect } from "react";
 import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  LineChart,
-  Line,
-  Legend
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, 
+  ResponsiveContainer, AreaChart, Area 
 } from "recharts";
 import { 
-  Briefcase, 
-  Clock, 
-  CheckCircle2, 
-  AlertCircle, 
-  IndianRupee, 
-  ArrowUpRight,
-  TrendingUp,
-  Building2,
-  ArrowRight,
-  Plus
+  HardHat, FileText, Clock, ArrowUpRight, 
+  MapPin, ClipboardCheck, History, Plus, 
+  ArrowLeft, Upload, Save, CheckCircle2, 
+  AlertCircle, X
 } from "lucide-react";
-import Link from "next/link";
 
-// Mock Data
-const kpiData = [
-  {
-    title: "Total Raised Contracts",
-    value: "48",
-    description: "+4 from last week",
-    icon: Briefcase,
-    color: "text-blue-600 bg-blue-50 dark:bg-blue-950/50 dark:text-blue-400",
-  },
-  {
-    title: "Pending Your Approval",
-    value: "07",
-    description: "Requires immediate review",
-    icon: Clock,
-    color: "text-amber-600 bg-amber-50 dark:bg-amber-950/50 dark:text-amber-400",
-  },
-  {
-    title: "Active Works (WIP)",
-    value: "18",
-    description: "Assigned to NBCC / Shapoorji",
-    icon: TrendingUp,
-    color: "text-emerald-600 bg-emerald-50 dark:bg-emerald-950/50 dark:text-emerald-400",
-  },
-  {
-    title: "Inspection Pending",
-    value: "05",
-    description: "Ready for ITPO verification",
-    icon: CheckCircle2,
-    color: "text-indigo-600 bg-indigo-50 dark:bg-indigo-950/50 dark:text-indigo-400",
-  },
-];
+// Texture URLs from TransparentTextures
+const textures = {
+  mainBg: "https://www.transparenttextures.com/patterns/symphony.png",
+  cardBg: "https://www.transparenttextures.com/patterns/graphy.png",
+  accentBg: "https://www.transparenttextures.com/patterns/carbon-fibre.png",
+  formBg: "https://www.transparenttextures.com/patterns/shattered.png",
+};
 
-const contractStatusData = [
-  { name: "Raised", count: 4 },
-  { name: "Under Review", count: 6 },
-  { name: "Est. Submitted", count: 7 },
-  { name: "Approved", count: 5 },
-  { name: "WIP", count: 18 },
-  { name: "Inspection", count: 5 },
-  { name: "Closed", count: 3 },
-];
-
-const categoryData = [
-  { name: "General Civil", value: 14, color: "#3b82f6" },
-  { name: "Electrical", value: 12, color: "#eab308" },
-  { name: "Plumbing", value: 8, color: "#06b6d4" },
-  { name: "Mechanical", value: 6, color: "#ec4899" },
-  { name: "AMC/CMC", value: 8, color: "#10b981" },
-];
-
-const monthlyExpenditure = [
-  { month: "Jan", budget: 45, actual: 40 },
-  { month: "Feb", budget: 60, actual: 55 },
-  { month: "Mar", budget: 85, actual: 92 },
-  { month: "Apr", budget: 70, actual: 68 },
-  { month: "May", budget: 95, actual: 85 },
-  { month: "Jun", budget: 120, actual: 110 },
-];
-
-const pendingApprovals = [
-  {
-    id: "CON-2024-089",
-    title: "Renovation of Convention Hall 3 & 4",
-    agency: "Shapoorji (Case 3)",
-    type: "Civil",
-    scale: "Large",
-    estimation: "₹45,50,000",
-    status: "Estimation Submitted",
-  },
-  {
-    id: "CON-2024-092",
-    title: "Plumbing Overhaul & Piping Replacement",
-    agency: "NBCC (Case 2)",
-    type: "Plumbing",
-    scale: "Medium",
-    estimation: "₹12,20,000",
-    status: "Estimation Submitted",
-  },
-  {
-    id: "CON-2024-101",
-    title: "HVAC Unit Replacement Area G",
-    agency: "NBCC & Shapoorji (Case 1)",
-    type: "Mechanical",
-    scale: "Large",
-    estimation: "Pending Bids",
-    status: "Under Review",
-  },
-];
-
-export default function ITPODashboard() {
+export default function ShapoorjiDashboard() {
   const [mounted, setMounted] = useState(false);
+  const [view, setView] = useState("dashboard"); // dashboard, estimation-form, logs
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  if (!mounted) {
-    return <div className="p-8 text-center text-muted-foreground">Loading dashboard layout...</div>;
-  }
+  if (!mounted) return null;
 
-  return (
-    <div className="space-y-8">
-      {/* Welcome & Quick Action Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+  const kpiData = [
+    { title: "Assigned Contracts", value: "24", icon: HardHat, color: "text-orange-600 bg-orange-100" },
+    { title: "Pending Estimations", value: "06", icon: FileText, color: "text-blue-600 bg-blue-100" },
+    { title: "Ongoing Projects", value: "12", icon: Clock, color: "text-emerald-600 bg-emerald-100" },
+    { title: "Inspection Pending", value: "03", icon: ClipboardCheck, color: "text-purple-600 bg-purple-100" },
+  ];
+
+  const logHistory = [
+    { id: 1, action: "Estimation Submitted", target: "CON-772 Facade Repair", time: "2 hours ago", user: "R. Sharma", status: "success" },
+    { id: 2, action: "Engineer Assigned", target: "CON-810 Hall 3 Interior", time: "5 hours ago", user: "System", status: "info" },
+    { id: 3, action: "Daily Progress Uploaded", target: "CON-901 Stone Paving", time: "Yesterday", user: "A. Khan", status: "success" },
+    { id: 4, action: "Estimation Rejected", target: "CON-442 HVAC AMC", time: "2 days ago", user: "ITPO Admin", status: "error" },
+  ];
+
+  // --- RENDERING COMPONENTS ---
+
+  const DashboardHome = () => (
+    <>
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-3xl font-semibold tracking-tight">ITPO Dashboard</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Overview of infrastructure contracts, estimations, and ongoing maintenance activities.
-          </p>
+          <h1 className="text-2xl font-bold text-slate-900">Partner Dashboard</h1>
+          <p className="text-slate-500 text-sm italic">Shapoorji Pallonji • Bharat Mandapam Division</p>
         </div>
-        <div className="flex items-center gap-3">
-          <Link href="/itpo/raise-contract">
-            <button className="inline-flex items-center justify-center gap-2 rounded-md bg-primary text-primary-foreground text-sm font-medium h-10 px-4 hover:bg-primary/90 transition-colors">
-              <Plus className="h-4 w-4" />
-              <span>Raise New Contract</span>
-            </button>
-          </Link>
+        <div className="flex gap-3">
+          <button 
+            onClick={() => setView("logs")}
+            className="flex items-center gap-2 bg-white border border-slate-200 px-4 py-2 rounded-lg text-sm font-semibold text-slate-700 hover:bg-slate-50 transition-all shadow-sm"
+          >
+            <History className="h-4 w-4" />
+            View Logs
+          </button>
+          <button 
+            onClick={() => setView("estimation-form")}
+            className="flex items-center gap-2 bg-orange-600 px-4 py-2 rounded-lg text-sm font-semibold text-white hover:bg-orange-700 transition-all shadow-md"
+          >
+            <Plus className="h-4 w-4" />
+            New Estimation
+          </button>
         </div>
       </div>
 
-      {/* KPI Cards Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {kpiData.map((kpi, i) => {
-          const Icon = kpi.icon;
-          return (
-            <div key={i} className="rounded-xl border border-border bg-card p-6 text-card-foreground shadow-sm">
-              <div className="flex items-center justify-between space-y-0 pb-2">
-                <span className="text-xs font-semibold text-muted-foreground tracking-wider uppercase">
-                  {kpi.title}
-                </span>
-                <div className={`p-2 rounded-lg ${kpi.color}`}>
-                  <Icon className="h-4 w-4" />
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
+        {kpiData.map((kpi, i) => (
+          <div key={i} className="relative p-6 rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden group">
+            <div className="absolute inset-0 pointer-events-none opacity-[0.04]" style={{ backgroundImage: `url(${textures.cardBg})` }} />
+            <div className="flex items-center justify-between relative z-10">
+              <div className={`p-2.5 rounded-lg ${kpi.color}`}>
+                <kpi.icon className="h-5 w-5" />
+              </div>
+              <ArrowUpRight className="h-4 w-4 text-slate-300 group-hover:text-orange-500 transition-colors" />
+            </div>
+            <div className="mt-4 relative z-10">
+              <p className="text-2xl font-bold text-slate-900">{kpi.value}</p>
+              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mt-0.5">{kpi.title}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid gap-8 lg:grid-cols-3">
+        <div className="lg:col-span-2 p-6 rounded-xl border border-slate-200 bg-white shadow-sm relative overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none opacity-[0.03]" style={{ backgroundImage: `url(${textures.cardBg})` }} />
+          <h3 className="font-bold text-slate-800 mb-6 relative z-10">Work Intensity Trend</h3>
+          <div className="h-72 relative z-10">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={[{d:'Mon', v:40}, {d:'Tue', v:35}, {d:'Wed', v:65}, {d:'Thu', v:55}, {d:'Fri', v:80}]}>
+                <defs>
+                  <linearGradient id="colorVal" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#f97316" stopOpacity={0.1}/>
+                    <stop offset="95%" stopColor="#f97316" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <XAxis dataKey="d" fontSize={12} axisLine={false} tickLine={false} />
+                <YAxis fontSize={12} axisLine={false} tickLine={false} />
+                <Tooltip />
+                <Area type="monotone" dataKey="v" stroke="#f97316" strokeWidth={2} fill="url(#colorVal)" />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        <div className="p-6 rounded-xl border border-slate-200 bg-white shadow-sm relative overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none opacity-[0.03]" style={{ backgroundImage: `url(${textures.cardBg})` }} />
+          <h3 className="font-bold text-slate-800 mb-4 relative z-10">Ongoing Tasks</h3>
+          <div className="space-y-4 relative z-10 text-xs">
+            {["Exhibition Hall Repair", "Convention Center Wiring", "VVIP Lounge Polishing"].map((task, i) => (
+              <div key={i} className="p-3 border rounded-lg hover:bg-slate-50 transition-colors">
+                <p className="font-bold text-slate-700">{task}</p>
+                <div className="mt-2 w-full bg-slate-100 h-1.5 rounded-full overflow-hidden">
+                  <div className="bg-orange-500 h-full w-[60%]" />
                 </div>
-              </div>
-              <div className="mt-2">
-                <div className="text-2xl font-bold tracking-tight">{kpi.value}</div>
-                <p className="text-xs text-muted-foreground mt-1">{kpi.description}</p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* Charts Section */}
-      <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">
-        {/* Contract Status Bar Chart */}
-        <div className="col-span-1 lg:col-span-2 rounded-xl border border-border bg-card p-6 shadow-sm">
-          <div className="flex flex-col space-y-1.5 pb-6">
-            <h3 className="text-sm font-semibold tracking-tight">Contract Lifecycle Distribution</h3>
-            <p className="text-xs text-muted-foreground">Number of contracts currently sitting in each status phase</p>
-          </div>
-          <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={contractStatusData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                <XAxis dataKey="name" fontSize={11} tickLine={false} axisLine={false} />
-                <YAxis fontSize={11} tickLine={false} axisLine={false} allowDecimals={false} />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: "hsl(var(--card))", 
-                    borderColor: "hsl(var(--border))",
-                    borderRadius: "8px",
-                    fontSize: "12px"
-                  }} 
-                />
-                <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} barSize={36} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Category Share Donut Chart */}
-        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-          <div className="flex flex-col space-y-1.5 pb-6">
-            <h3 className="text-sm font-semibold tracking-tight">Contracts by Category</h3>
-            <p className="text-xs text-muted-foreground">Proportional distribution of current work categories</p>
-          </div>
-          <div className="h-52 relative flex items-center justify-center">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={categoryData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={4}
-                  dataKey="value"
-                >
-                  {categoryData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: "hsl(var(--card))", 
-                    borderColor: "hsl(var(--border))",
-                    borderRadius: "8px",
-                    fontSize: "12px" 
-                  }} 
-                />
-              </PieChart>
-            </ResponsiveContainer>
-            {/* Center Summary Label */}
-            <div className="absolute flex flex-col items-center justify-center">
-              <span className="text-xl font-bold">48</span>
-              <span className="text-[10px] text-muted-foreground uppercase font-medium">Total Items</span>
-            </div>
-          </div>
-          {/* Legend Details */}
-          <div className="grid grid-cols-2 gap-2 mt-4">
-            {categoryData.map((cat, i) => (
-              <div key={i} className="flex items-center gap-2 text-xs">
-                <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
-                <span className="text-muted-foreground truncate">{cat.name} ({cat.value})</span>
               </div>
             ))}
           </div>
         </div>
       </div>
+    </>
+  );
 
-      {/* Monthly Trends & Pending Approvals */}
-      <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">
-        {/* Budget Execution Trend */}
-        <div className="col-span-1 rounded-xl border border-border bg-card p-6 shadow-sm flex flex-col justify-between">
-          <div>
-            <div className="flex flex-col space-y-1.5 pb-4">
-              <h3 className="text-sm font-semibold tracking-tight">Approved Budget vs. Expenditure</h3>
-              <p className="text-xs text-muted-foreground">Monthly summary of financial layouts (in Lakhs ₹)</p>
-            </div>
-            <div className="h-56">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={monthlyExpenditure} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                  <XAxis dataKey="month" fontSize={11} tickLine={false} axisLine={false} />
-                  <YAxis fontSize={11} tickLine={false} axisLine={false} />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: "hsl(var(--card))", 
-                      borderColor: "hsl(var(--border))",
-                      borderRadius: "8px",
-                      fontSize: "12px"
-                    }} 
-                  />
-                  <Legend verticalAlign="top" height={36} iconType="circle" iconSize={8} wrapperStyle={{ fontSize: "11px" }} />
-                  <Line type="monotone" dataKey="budget" name="Approved Limit" stroke="#3b82f6" strokeWidth={2} activeDot={{ r: 4 }} />
-                  <Line type="monotone" dataKey="actual" name="Actual Cost" stroke="#10b981" strokeWidth={2} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
+  const EstimationForm = () => (
+    <div className="max-w-3xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <button onClick={() => setView("dashboard")} className="flex items-center gap-2 text-slate-500 hover:text-slate-800 mb-6 transition-colors font-semibold">
+        <ArrowLeft className="h-4 w-4" /> Back to Overview
+      </button>
+
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-xl overflow-hidden relative">
+        <div className="absolute inset-0 pointer-events-none opacity-[0.05]" style={{ backgroundImage: `url(${textures.formBg})` }} />
+        
+        <div className="bg-slate-900 p-6 text-white relative">
+          <div className="absolute inset-0 opacity-10 pointer-events-none" style={{ backgroundImage: `url(${textures.accentBg})` }} />
+          <h2 className="text-xl font-bold">New Work Estimation</h2>
+          <p className="text-slate-400 text-xs mt-1 tracking-widest uppercase">Submission Form • SP-EST-2024</p>
         </div>
 
-        {/* Action Needed Component Table */}
-        <div className="col-span-1 lg:col-span-2 rounded-xl border border-border bg-card p-6 shadow-sm">
-          <div className="flex items-center justify-between pb-4">
-            <div className="flex flex-col space-y-1.5">
-              <h3 className="text-sm font-semibold tracking-tight">Estimations Pending Action</h3>
-              <p className="text-xs text-muted-foreground">Estimations submitted by NBCC / Shapoorji awaiting ITPO Approval</p>
+        <form className="p-8 space-y-6 relative z-10 bg-white/50 backdrop-blur-sm">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-tight">Contract Reference</label>
+              <select className="w-full p-2.5 rounded-lg border border-slate-200 text-sm focus:ring-2 focus:ring-orange-500 outline-none">
+                <option>CON-102: Plaza Renovation</option>
+                <option>CON-105: Hall 4 Mechanical</option>
+              </select>
             </div>
-            <Link href="/itpo/approvals" className="text-xs text-primary font-medium flex items-center gap-1 hover:underline">
-              <span>View All</span>
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-500 uppercase tracking-tight">Estimation Amount (₹)</label>
+              <input type="number" placeholder="4,50,000" className="w-full p-2.5 rounded-lg border border-slate-200 text-sm focus:ring-2 focus:ring-orange-500 outline-none" />
+            </div>
           </div>
-          
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="border-b border-border text-muted-foreground font-medium">
-                  <th className="py-3 px-2">ID</th>
-                  <th className="py-3 px-2">Title</th>
-                  <th className="py-3 px-2">Assigned Agency</th>
-                  <th className="py-3 px-2">Est. Cost</th>
-                  <th className="py-3 px-2">Status</th>
-                  <th className="py-3 px-2 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/60">
-                {pendingApprovals.map((item, i) => (
-                  <tr key={i} className="hover:bg-accent/40 transition-colors">
-                    <td className="py-3.5 px-2 font-mono font-medium">{item.id}</td>
-                    <td className="py-3.5 px-2">
-                      <div className="flex flex-col">
-                        <span className="font-medium text-foreground">{item.title}</span>
-                        <span className="text-[10px] text-muted-foreground">{item.type} • {item.scale} Scale</span>
-                      </div>
-                    </td>
-                    <td className="py-3.5 px-2 text-muted-foreground">{item.agency}</td>
-                    <td className="py-3.5 px-2 font-medium text-foreground">{item.estimation}</td>
-                    <td className="py-3.5 px-2">
-                      <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
-                        {item.status}
-                      </span>
-                    </td>
-                    <td className="py-3.5 px-2 text-right">
-                      <Link href={`/itpo/approvals/${item.id}`}>
-                        <button className="inline-flex h-7 items-center justify-center rounded-md bg-secondary text-secondary-foreground text-[11px] font-semibold px-3 border border-border hover:bg-accent transition-colors">
-                          Review
-                        </button>
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+
+          <div className="space-y-2">
+            <label className="text-xs font-bold text-slate-500 uppercase tracking-tight">Technical Description</label>
+            <textarea rows={4} placeholder="Scope of work, materials required, and labor breakdown..." className="w-full p-2.5 rounded-lg border border-slate-200 text-sm focus:ring-2 focus:ring-orange-500 outline-none" />
           </div>
+
+          <div className="p-6 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors flex flex-col items-center justify-center gap-2 cursor-pointer group">
+            <Upload className="h-8 w-8 text-slate-400 group-hover:text-orange-500 transition-colors" />
+            <p className="text-sm font-bold text-slate-600">Upload BOQ & Technical Documents</p>
+            <p className="text-[10px] text-slate-400 uppercase">PDF, XLSX up to 10MB</p>
+          </div>
+
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+            <button type="button" onClick={() => setView("dashboard")} className="px-6 py-2 rounded-lg text-sm font-bold text-slate-500 hover:bg-slate-50 transition-all">Cancel</button>
+            <button type="button" onClick={() => setView("dashboard")} className="px-8 py-2 bg-orange-600 text-white rounded-lg text-sm font-bold shadow-lg hover:bg-orange-700 transition-all flex items-center gap-2">
+              <Save className="h-4 w-4" /> Submit to ITPO
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+
+  const LogsHistory = () => (
+    <div className="max-w-4xl mx-auto animate-in fade-in slide-in-from-right-4 duration-500">
+      <div className="flex items-center justify-between mb-8">
+        <button onClick={() => setView("dashboard")} className="flex items-center gap-2 text-slate-500 hover:text-slate-800 transition-colors font-semibold">
+          <ArrowLeft className="h-4 w-4" /> Dashboard
+        </button>
+        <h2 className="text-xl font-bold text-slate-900 tracking-tight">Audit Log & Activity History</h2>
+      </div>
+
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none opacity-[0.03]" style={{ backgroundImage: `url(${textures.cardBg})` }} />
+        
+        <div className="divide-y divide-slate-100 relative z-10">
+          {logHistory.map((log) => (
+            <div key={log.id} className="p-6 hover:bg-slate-50 transition-colors flex items-start gap-4">
+              <div className={`p-2 rounded-full shrink-0 ${
+                log.status === 'success' ? 'bg-emerald-100 text-emerald-600' : 
+                log.status === 'error' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'
+              }`}>
+                {log.status === 'success' ? <CheckCircle2 className="h-5 w-5" /> : <AlertCircle className="h-5 w-5" />}
+              </div>
+              <div className="flex-1">
+                <div className="flex justify-between items-start">
+                  <h4 className="text-sm font-bold text-slate-900">{log.action}</h4>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{log.time}</span>
+                </div>
+                <p className="text-xs text-slate-500 mt-1">Project: <span className="text-slate-700 font-semibold">{log.target}</span></p>
+                <p className="text-[10px] text-slate-400 mt-2">Performed by: {log.user}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-[#f9fafb] relative">
+      {/* Background Texture Overlay */}
+      <div className="fixed inset-0 pointer-events-none opacity-[0.03]" style={{ backgroundImage: `url(${textures.mainBg})` }} />
+
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 relative z-10">
+        {view === "dashboard" && <DashboardHome />}
+        {view === "estimation-form" && <EstimationForm />}
+        {view === "logs" && <LogsHistory />}
+
+        <footer className="mt-16 pt-8 border-t border-slate-200">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4 opacity-50 grayscale hover:grayscale-0 transition-all">
+             <div className="flex items-center gap-2">
+                <div className="h-8 w-8 bg-slate-900 rounded flex items-center justify-center font-bold text-white text-xs">S</div>
+                <p className="text-[10px] font-black uppercase tracking-[0.2em]">Shapoorji Pallonji Co. Ltd</p>
+             </div>
+             <p className="text-[10px] font-bold uppercase tracking-[0.2em]">© 2024 Contract Mgmt Portal • SP-ITPO</p>
+          </div>
+        </footer>
+      </main>
     </div>
   );
 }
