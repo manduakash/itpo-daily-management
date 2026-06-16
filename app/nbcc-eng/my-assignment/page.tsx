@@ -129,7 +129,7 @@ export default function MyAssignmentsPage() {
       {/* ASSIGNMENTS GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
         {assignments.map((item) => (
-          <Card key={item.id} className="rounded-[40px] border-none shadow-xl overflow-hidden bg-white group hover:shadow-2xl transition-all duration-500">
+          <Card key={item.id} className="rounded-[40px] border-none shadow-xl overflow-hidden bg-white group hover:shadow-2xl transition-all duration-500 p-0">
             {/* Card Header with Pattern */}
             <div className={cn("p-8 relative overflow-hidden bg-gradient-to-br text-white", item.color)}>
               <div className="absolute inset-0 opacity-40 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/diagonal-striped-brick.png')]" />

@@ -101,7 +101,7 @@ export default function CompletionPage() {
                 key="step1" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
                 className="space-y-10"
               >
-                <Card className="rounded-[48px] border-none shadow-xl overflow-hidden bg-white">
+                <Card className="rounded-[48px] border-none shadow-xl overflow-hidden bg-white p-0">
                   <CardHeader className="p-0">
                     <div className="p-8 bg-gradient-to-r from-slate-800 to-slate-950 text-white relative overflow-hidden">
                       <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />

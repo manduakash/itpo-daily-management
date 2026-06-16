@@ -166,7 +166,7 @@ export default function SiteReportPage() {
 
         {/* RIGHT: THE REPORTS LEDGER */}
         <div className="lg:col-span-3">
-          <Card className="rounded-[48px] border-none shadow-xl overflow-hidden bg-white">
+          <Card className="rounded-[48px] border-none shadow-xl overflow-hidden bg-white p-0">
             <CardHeader className="p-0">
               <div className="p-8 bg-gradient-to-r from-slate-800 to-indigo-950 text-white relative overflow-hidden">
                 <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
