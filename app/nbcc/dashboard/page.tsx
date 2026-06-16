@@ -124,7 +124,7 @@ export default function EnterpriseDashboard() {
         
         {/* LEFT: MONITORING LEDGER (2/3) */}
         <div className="lg:col-span-2 space-y-8">
-          <Card className="rounded-[48px] border-none shadow-xl overflow-hidden bg-white h-full flex flex-col">
+          <Card className="rounded-[48px] border-none shadow-xl overflow-hidden bg-white h-full flex flex-col p-0">
             <CardHeader className="p-0">
               <div className="p-10 bg-gradient-to-r from-slate-800 via-slate-900 to-indigo-950 text-white relative overflow-hidden">
                 <div className="absolute inset-0 opacity-20 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
@@ -187,7 +187,7 @@ export default function EnterpriseDashboard() {
         <div className="space-y-8">
           
           {/* ANALYTICS WIDGET */}
-          <Card className="rounded-[40px] border-none shadow-lg bg-white overflow-hidden group">
+          <Card className="rounded-[40px] border-none shadow-lg bg-white overflow-hidden group p-0">
             <div className="p-6 flex items-center justify-between text-white relative bg-gradient-to-r from-indigo-600 to-blue-700">
               <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
               <div className="flex items-center gap-4 relative z-10">
@@ -230,7 +230,7 @@ export default function EnterpriseDashboard() {
           </Card>
 
           {/* ALLOCATION WIDGET */}
-          <Card className="rounded-[40px] border-none shadow-lg bg-white overflow-hidden group">
+          <Card className="rounded-[40px] border-none shadow-lg bg-white overflow-hidden group p-0">
             <div className="p-6 flex items-center justify-between text-white relative bg-gradient-to-r from-emerald-500 to-teal-600">
               <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
               <div className="flex items-center gap-4 relative z-10">
