@@ -167,7 +167,7 @@ export default function MyAssignments() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95 }}
             >
-              <Card className="rounded-[48px] border-none shadow-xl overflow-hidden bg-white group hover:shadow-2xl transition-all duration-500">
+              <Card className="rounded-[48px] border-none shadow-xl overflow-hidden bg-white group hover:shadow-2xl transition-all duration-500 p-0">
                 {/* Header Section */}
                 <div className={cn("p-8 relative overflow-hidden bg-gradient-to-br text-white", work.color)}>
                   <div className="absolute inset-0 opacity-40 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/diagonal-striped-brick.png')]" />

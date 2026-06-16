@@ -41,7 +41,7 @@ interface ContractItem {
   type: "Estimation" | "Inspection" | "Financial Audit";
   budget: number;
   date: string;
-  status: "Pending" | "Approved" | "Revision" | "Alert";
+  status: "Pending" | "Approved" | "Review" | "Alert";
   description: string;
   requester: string;
 }
@@ -104,7 +104,7 @@ const INITIAL_CONTRACTS: ContractItem[] = [
     type: "Inspection",
     budget: 1800000,
     date: "2025-10-02",
-    status: "Revision",
+    status: "Review",
     requester: "Col. R. Singh (Director Security)",
     description: "Multi-point intrusion detection micro-fences linked directly to security operations desk."
   },
@@ -130,7 +130,7 @@ const INITIAL_CONTRACTS: ContractItem[] = [
     date: "2025-09-15",
     status: "Alert",
     requester: "V. K. Rao (Electrical Head)",
-    description: "Coil insulation overhaul, oil replacement and load-testing report flagged critical discrepancies in winding resistance."
+    description: "Coil insulation overhaul, oil replacement and load-testing report rejected critical discrepancies in winding resistance."
   },
   {
     id: "CON-1912",
@@ -174,11 +174,11 @@ export default function PremiumPastelDashboard() {
     const total = contracts.length;
     const pending = contracts.filter((c) => c.status === "Pending").length;
     const approved = contracts.filter((c) => c.status === "Approved").length;
-    const revision = contracts.filter((c) => c.status === "Revision").length;
+    const review = contracts.filter((c) => c.status === "Review").length;
     const alert = contracts.filter((c) => c.status === "Alert").length;
     const totalBudget = contracts.reduce((acc, curr) => acc + curr.budget, 0);
 
-    return { total, pending, approved, revision, alert, totalBudget };
+    return { total, pending, approved, review, alert, totalBudget };
   }, [contracts]);
 
   const categories = useMemo(() => {
@@ -206,21 +206,21 @@ export default function PremiumPastelDashboard() {
     setContracts((prev) =>
       prev.map((c) => (c.id === id ? { ...c, status: "Approved" } : c))
     );
-    showNotification(`Approved item ${id}. Financial dispatch cleared.`, "success");
+    showNotification(`Approved item ${id}. Financial dispatch approved.`, "success");
   };
 
   const handleReject = (id: string) => {
     setContracts((prev) =>
       prev.map((c) => (c.id === id ? { ...c, status: "Alert" } : c))
     );
-    showNotification(`Discrepancy registered on ${id}. Flagged for security review.`, "error");
+    showNotification(`Discrepancy registered on ${id}. rejected for security review.`, "error");
   };
 
-  const handleRequestRevision = (id: string) => {
+  const handleRequestReview = (id: string) => {
     setContracts((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, status: "Revision" } : c))
+      prev.map((c) => (c.id === id ? { ...c, status: "Review" } : c))
     );
-    showNotification(`Revision requested for ${id}. Partner agency notified.`, "info");
+    showNotification(`Review requested for ${id}. Partner agency notified.`, "info");
   };
 
   const showNotification = (msg: string, type: "success" | "info" | "error" | "warn") => {
@@ -279,7 +279,7 @@ export default function PremiumPastelDashboard() {
   const currentSelectedContract = contracts.find((c) => c.id === selectedId) || contracts[0];
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-[#0f172a] flex flex-row relative antialiased selection:bg-[#B8C0FF]/40 selection:text-slate-900">
+    <div className="min-h-screen  text-[#0f172a] flex flex-row relative antialiased selection:bg-[#B8C0FF]/40 selection:text-slate-900">
       
       {/* 
         Background Textures
@@ -356,7 +356,7 @@ export default function PremiumPastelDashboard() {
           {/* Total Budget KPI */}
           <div className="bg-[#E4C1F9] border border-[#CBC0D3]/60 p-4 rounded-xl flex flex-col justify-between shadow-sm hover:shadow-md transition-all duration-200 group">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-purple-900/80">Aggregate Budget</span>
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-purple-900/80">Total Estimation</span>
               <DollarSign className="h-4 w-4 text-purple-800/80 group-hover:scale-105 transition-transform" />
             </div>
             <div className="mt-2.5">
@@ -372,7 +372,7 @@ export default function PremiumPastelDashboard() {
           {/* Pending Reviews KPI */}
           <div className="bg-[#FFD6A5] border border-[#F9C74F]/50 p-4 rounded-xl flex flex-col justify-between shadow-sm hover:shadow-md transition-all duration-200 group">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-900/80">Awaiting Signs</span>
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-900/80">Awaiting Approvals</span>
               <Calculator className="h-4 w-4 text-amber-800/80 group-hover:scale-105 transition-transform" />
             </div>
             <div className="mt-2.5">
@@ -386,7 +386,7 @@ export default function PremiumPastelDashboard() {
           {/* Approved Contracts KPI */}
           <div className="bg-[#CDEAC0] border border-[#BDE0A8]/60 p-4 rounded-xl flex flex-col justify-between shadow-sm hover:shadow-md transition-all duration-200 group">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-emerald-950/80">Disbursed Ledger</span>
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-emerald-950/80">Approved Estimations</span>
               <Check className="h-4 w-4 text-emerald-900/80 group-hover:scale-105 transition-transform" />
             </div>
             <div className="mt-2.5">
@@ -397,21 +397,21 @@ export default function PremiumPastelDashboard() {
             </div>
           </div>
 
-          {/* Revision Requested KPI */}
+          {/* Review Requested KPI */}
           <div className="bg-[#AFCBFF] border border-[#B8C0FF]/60 p-4 rounded-xl flex flex-col justify-between shadow-sm hover:shadow-md transition-all duration-200 group">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-blue-900/80">Pending Adjustments</span>
               <SlidersHorizontal className="h-4 w-4 text-blue-800/80 group-hover:scale-105 transition-transform" />
             </div>
             <div className="mt-2.5">
-              <p className="text-xl font-bold text-slate-950">{kpis.revision}</p>
+              <p className="text-xl font-bold text-slate-950">{kpis.review}</p>
               <p className="text-[10px] text-blue-900/60 font-semibold mt-0.5">
                 Sent back to contractors
               </p>
             </div>
           </div>
 
-          {/* Alert Flagged KPI */}
+          {/* Alert rejected KPI */}
           <div className="bg-[#FFB4A2] border border-[#F7CAD0]/70 p-4 rounded-xl flex flex-col justify-between shadow-sm hover:shadow-md transition-all duration-200 group">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-red-950/80">Security Holds</span>
@@ -420,7 +420,7 @@ export default function PremiumPastelDashboard() {
             <div className="mt-2.5">
               <p className="text-xl font-bold text-slate-950">{kpis.alert}</p>
               <p className="text-[10px] text-red-900/60 font-semibold mt-0.5">
-                Flagged by engineering boards
+                rejected by engineering boards
               </p>
             </div>
           </div>
@@ -428,7 +428,7 @@ export default function PremiumPastelDashboard() {
           {/* Secondary Auxiliary Support KPI */}
           <div className="bg-[#A9D6E5]/70 border border-[#90E0EF]/60 p-4 rounded-xl flex flex-col justify-between shadow-sm hover:shadow-md transition-all duration-200 group">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-cyan-950/80">Partner Nodes</span>
+              <span className="text-[11px] font-semibold uppercase tracking-wider text-cyan-950/80">Contractors</span>
               <Building2 className="h-4 w-4 text-cyan-900/80 group-hover:scale-105 transition-transform" />
             </div>
             <div className="mt-2.5">
@@ -491,8 +491,8 @@ export default function PremiumPastelDashboard() {
               >
                 <option value="All">All States</option>
                 <option value="Pending">Pending Evaluation</option>
-                <option value="Approved">Approved / Cleared</option>
-                <option value="Revision">Revision Holds</option>
+                <option value="Approved">Approved</option>
+                <option value="Review">Review Holds</option>
                 <option value="Alert">Alert Warnings</option>
               </select>
             </div>
@@ -613,17 +613,17 @@ export default function PremiumPastelDashboard() {
                               )}
                               {item.status === "Approved" && (
                                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#CDEAC0] text-emerald-950 border border-[#BDE0A8]/45">
-                                  Cleared
+                                  Approved
                                 </span>
                               )}
-                              {item.status === "Revision" && (
+                              {item.status === "Review" && (
                                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#AFCBFF] text-blue-900 border border-[#B8C0FF]/45">
-                                  Revision
+                                  Review
                                 </span>
                               )}
                               {item.status === "Alert" && (
                                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#FFB4A2] text-red-950 border border-[#F7CAD0]/45">
-                                  Flagged
+                                  Rejected
                                 </span>
                               )}
                             </td>
@@ -680,7 +680,7 @@ export default function PremiumPastelDashboard() {
                     <span className="text-[11px] font-semibold text-slate-600">Current Signoff:</span>
                     {currentSelectedContract.status === "Pending" && <span className="h-3 w-3 rounded-full bg-[#FFD6A5] border border-[#F9C74F]" />}
                     {currentSelectedContract.status === "Approved" && <span className="h-3 w-3 rounded-full bg-[#BDE0A8] border border-[#CDEAC0]" />}
-                    {currentSelectedContract.status === "Revision" && <span className="h-3 w-3 rounded-full bg-[#AFCBFF] border border-[#B8C0FF]" />}
+                    {currentSelectedContract.status === "Review" && <span className="h-3 w-3 rounded-full bg-[#AFCBFF] border border-[#B8C0FF]" />}
                     {currentSelectedContract.status === "Alert" && <span className="h-3 w-3 rounded-full bg-[#FFB4A2] border border-[#F7CAD0]" />}
                   </div>
                 </div>
@@ -759,10 +759,10 @@ export default function PremiumPastelDashboard() {
                       <div className="grid grid-cols-2 gap-2">
                         
                         <button
-                          onClick={() => handleRequestRevision(currentSelectedContract.id)}
+                          onClick={() => handleRequestReview(currentSelectedContract.id)}
                           className="h-9 px-3 text-xs font-semibold border border-[#B8C0FF]/55 bg-[#AFCBFF]/40 text-blue-950 rounded-lg hover:bg-[#AFCBFF]/60 transition-all hover:-translate-y-[0.5px] flex items-center justify-center gap-1"
                         >
-                          Request Revision
+                          Request Review
                         </button>
 
                         <button
@@ -776,7 +776,7 @@ export default function PremiumPastelDashboard() {
                           onClick={() => handleReject(currentSelectedContract.id)}
                           className="col-span-2 h-9 text-xs font-semibold border border-[#F7CAD0]/50 bg-[#FFB4A2]/30 text-red-950 rounded-lg hover:bg-[#FFB4A2]/60 transition-all hover:-translate-y-[0.5px] flex items-center justify-center gap-1"
                         >
-                          <X className="h-3.5 w-3.5" /> Flag / Hold Discrepancies
+                          <X className="h-3.5 w-3.5" /> Reject / Hold Discrepancies
                         </button>
 
                       </div>

@@ -51,7 +51,7 @@ const INITIAL_STATS = [
     value: "12",
     subtitle: "Currently in execution",
     icon: Clock,
-    color: "bg-[#AFCBFF] border-[#B8C0FF]/60 text-slate-900",
+    color: "bg-[#AFCBFF]/50 border-[#B8C0FF] text-slate-900",
     route: "/itpo/contracts",
   },
   {
@@ -60,7 +60,7 @@ const INITIAL_STATS = [
     value: "03",
     subtitle: "Estimations & Closures",
     icon: AlertTriangle,
-    color: "bg-[#FFD6A5] border-[#F9C74F]/50 text-slate-900",
+    color: "bg-[#FFD6A5]/50 border-[#F9C74F] text-slate-900",
     alert: true,
     route: "/itpo/approvals",
   },
@@ -70,7 +70,7 @@ const INITIAL_STATS = [
     value: "28",
     subtitle: "Successfully completed",
     icon: CheckCircle2,
-    color: "bg-[#CDEAC0] border-[#BDE0A8]/60 text-slate-900",
+    color: "bg-[#CDEAC0]/50 border-[#BDE0A8] text-slate-900",
     route: "/itpo/closed",
   },
 ];
@@ -242,7 +242,7 @@ export default function ITPODashboard() {
   );
 
   return (
-    <div className="space-y-5 pb-10 bg-[#f8fafc] text-[#0f172a] min-h-screen relative font-sans selection:bg-[#B8C0FF]/40 p-6 md:p-8">
+    <div className="space-y-5 pb-10  text-[#0f172a] min-h-screen relative font-sans selection:bg-[#B8C0FF]/40 p-6 md:p-8">
       
       {/* Subtle Pattern Textures */}
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-[0.015] pointer-events-none z-0" />
@@ -547,7 +547,7 @@ export default function ITPODashboard() {
         <div className="lg:col-span-4 space-y-4">
 
           {/* Action Required Pastel Widget */}
-          <Card className="rounded-xl border border-[#F7CAD0]/80 bg-[#FFB4A2]/20 shadow-sm overflow-hidden flex flex-col">
+          <Card className="rounded-xl border border-[#F7CAD0]/90 bg-[#FFB4A2]/5 shadow-sm overflow-hidden flex flex-col">
             <div className="p-3.5 border-b border-[#F7CAD0]/50 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div className="h-6 w-6 rounded-md bg-[#FFB4A2]/55 border border-[#F7CAD0] flex items-center justify-center shrink-0">

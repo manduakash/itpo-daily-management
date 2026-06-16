@@ -212,13 +212,13 @@ export function RoleBasedSidebar({
   const handleSignOut = () => {
     document.cookie =
       "user-role=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-    router.push("/login");
+    router.push("/");
   };
 
   return (
     <aside className="fixed inset-y-0 left-0 z-30 w-64 overflow-hidden border-r border-white/10">
       {/* Background */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A] via-[#172554] to-[#1E1B4B]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A] via-[#304dab] to-[#1E1B4B]" />
 
       {/* Carbon Texture @ 20% */}
       <div

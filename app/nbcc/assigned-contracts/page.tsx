@@ -7,290 +7,276 @@ import {
   Briefcase, MapPin, Hammer, Zap, 
   Droplets, Settings, List, LayoutGrid,
   Activity, ArrowUpRight, FileSearch, HardHat,
-  Users, CheckCircle2, X, AlertTriangle, IndianRupee, Loader2
+  Users, CheckCircle2, X, AlertTriangle, IndianRupee, Loader2,
+  History, PlusCircle, Wrench, Camera, MessageSquare
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
 
-// --- TypeScript Definitions ---
-type Category = "General Civil" | "Electrical" | "Mechanical" | "Plumbing" | "AMC/CMC";
-type Priority = "Low" | "Medium" | "High" | "Critical";
-type Scale = "Small" | "Medium" | "Large";
-type Status = "Under Review" | "Estimation Submitted" | "Approved" | "Engineer Assigned" | "Work In Progress" | "Inspection Pending";
+// --- Status Badge Helper (ITPO Style) ---
+function NBCCStatusBadge({ status }: { status: string }) {
+  const styles: Record<string, string> = {
+    "Under Review": "bg-blue-100 text-blue-700 border-blue-200",
+    "Estimation Submitted": "bg-purple-100 text-purple-700 border-purple-200",
+    "Approved": "bg-emerald-100 text-emerald-700 border-emerald-200",
+    "Engineer Assigned": "bg-cyan-100 text-cyan-700 border-cyan-200",
+    "Work In Progress": "bg-amber-100 text-amber-700 border-amber-200",
+    "Inspection Pending": "bg-indigo-100 text-indigo-700 border-indigo-200",
+  };
 
-interface Contract {
-  id: string;
-  title: string;
-  location: string;
-  category: Category;
-  priority: Priority;
-  scale: Scale;
-  status: Status;
-  caseType: "Case 1" | "Case 2" | "Case 3";
-  deadline: string;
-  agency: string;
-  description: string;
+  return (
+    <Badge variant="outline" className={cn("text-[9px] font-black uppercase tracking-widest px-3 py-0.5 border-2 rounded-full", styles[status] || "bg-slate-100 text-slate-700")}>
+      {status}
+    </Badge>
+  );
 }
 
-// --- Icons & Styling Maps ---
-const categoryIcons: Record<Category, React.ReactNode> = {
-  "General Civil": <Hammer className="h-3.5 w-3.5" />,
-  "Electrical": <Zap className="h-3.5 w-3.5" />,
-  "Mechanical": <Settings className="h-3.5 w-3.5" />,
-  "Plumbing": <Droplets className="h-3.5 w-3.5" />,
-  "AMC/CMC": <Activity className="h-3.5 w-3.5" />,
-};
-
 const kpiData = [
-  { title: "Pending Tech Review", value: "12", trend: "Requires Scale Classif.", icon: FileSearch, bg: "bg-amber-50/80 dark:bg-amber-900/10", border: "border-amber-200 dark:border-amber-800", iconBg: "bg-amber-500", textColor: "text-amber-700 dark:text-amber-400" },
-  { title: "NBCC Direct (Small)", value: "08", trend: "Internal Execution", icon: HardHat, bg: "bg-emerald-50/80 dark:bg-emerald-900/10", border: "border-emerald-200 dark:border-emerald-800", iconBg: "bg-emerald-600", textColor: "text-emerald-700 dark:text-emerald-400" },
-  { title: "Shapoorji (Large)", value: "24", trend: "Forwarded for Est.", icon: ExternalLink, bg: "bg-indigo-50/80 dark:bg-indigo-900/10", border: "border-indigo-200 dark:border-indigo-800", iconBg: "bg-indigo-600", textColor: "text-indigo-700 dark:text-indigo-400" },
-  { title: "Deployment Status", value: "92%", trend: "Engineer On-site", icon: Users, bg: "bg-slate-100/80 dark:bg-slate-800/40", border: "border-slate-300 dark:border-slate-700", iconBg: "bg-slate-700", textColor: "text-slate-700 dark:text-slate-300" },
+  { title: "Pending Tech Review", value: "12", subtitle: "Requires Scale Classif.", icon: FileSearch, color: "from-amber-500 to-orange-600", alert: true },
+  { title: "NBCC Direct Execution", value: "08", subtitle: "Small Scale Projects", icon: HardHat, color: "from-blue-600 to-indigo-700" },
+  { title: "Partner Forwarded", value: "24", subtitle: "Large Scale (Shapoorji)", icon: ExternalLink, color: "from-emerald-500 to-teal-600" },
 ];
 
 export default function NBCCAssignedContracts() {
   const [mounted, setMounted] = useState(false);
-  
-  // --- WORKABLE STATE ---
-  const [contracts, setContracts] = useState<Contract[]>([
-    { id: "CON-2025-701", title: "Plenary Hall Interior Renovation", location: "Block A, Level 2", category: "General Civil", priority: "Critical", scale: "Large", status: "Under Review", caseType: "Case 2", deadline: "30 June 2025", agency: "Pending (NBCC Review)", description: "Complete restoration of acoustic wall paneling and ceiling moisture treatment." },
-    { id: "CON-2025-705", title: "Parking Lot B Lighting Grid", location: "Outdoor Zone 4", category: "Electrical", priority: "Medium", scale: "Small", status: "Engineer Assigned", caseType: "Case 2", deadline: "20 May 2025", agency: "NBCC Direct", description: "Standard LED replacement and wiring check for the secondary parking bay." },
-    { id: "CON-2025-709", title: "HVAC Cooling Tower Maintenance", location: "Utility Terrace", category: "Mechanical", priority: "High", scale: "Large", status: "Estimation Submitted", caseType: "Case 1", deadline: "15 June 2025", agency: "Shapoorji (Proposed)", description: "Quarterly mechanical overhauling and chemical descaling of tower units." },
+  const [contracts, setContracts] = useState([
+    { id: "CON-2025-701", title: "Plenary Hall Interior Renovation", location: "Block A, Level 2", category: "General Civil", priority: "Critical", scale: "Large", status: "Under Review", agency: "Pending NBCC Review", description: "Complete restoration of acoustic wall paneling and ceiling moisture treatment.", progress: 10 },
+    { id: "CON-2025-705", title: "Parking Lot B Lighting Grid", location: "Outdoor Zone 4", category: "Electrical", priority: "Medium", scale: "Small", status: "Engineer Assigned", agency: "NBCC Direct", description: "Standard LED replacement and wiring check for the secondary parking bay.", progress: 45 },
+    { id: "CON-2025-709", title: "HVAC Cooling Tower Maintenance", location: "Utility Terrace", category: "Mechanical", priority: "High", scale: "Large", status: "Estimation Submitted", agency: "Shapoorji (Proposed)", description: "Quarterly mechanical overhauling and chemical descaling of tower units.", progress: 25 },
   ]);
 
-  const [selectedTask, setSelectedTask] = useState<Contract | null>(null);
-  const [actionType, setActionType] = useState<"review" | "assign" | "estimation" | null>(null);
+  const [selectedTask, setSelectedTask] = useState<any>(null);
+  const [actionType, setActionType] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  // Internal selection state for Review
-  const [tempScale, setTempScale] = useState<Scale>("Small");
 
   useEffect(() => { setMounted(true); }, []);
-
-  const openPanel = (task: Contract, type: "review" | "assign" | "estimation") => {
-    setSelectedTask(task);
-    setActionType(type);
-    setTempScale(task.scale); // Default to current scale
-  };
-
-  const closePanel = () => {
-    setSelectedTask(null);
-    setActionType(null);
-    setIsSubmitting(false);
-  };
-
-  // --- WORKABLE SUBMIT FUNCTION ---
-  const handleSubmit = () => {
-    if (!selectedTask) return;
-    setIsSubmitting(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      setContracts(prev => prev.map(c => {
-        if (c.id === selectedTask.id) {
-          if (actionType === 'review') {
-            return { 
-                ...c, 
-                scale: tempScale, 
-                status: tempScale === 'Small' ? 'Approved' : 'Estimation Submitted',
-                agency: tempScale === 'Small' ? 'NBCC Direct' : 'Shapoorji (Large Scale)' 
-            };
-          }
-          if (actionType === 'assign') {
-            return { ...c, status: 'Work In Progress' };
-          }
-          if (actionType === 'estimation') {
-            return { ...c, status: 'Approved' };
-          }
-        }
-        return c;
-      }));
-      closePanel();
-    }, 1000);
-  };
-
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-[#f1f5f9] dark:bg-[#020617] text-slate-900 dark:text-slate-50 relative overflow-hidden">
-      <div className="fixed inset-0 opacity-[0.03] pointer-events-none z-0" style={{ backgroundImage: `url('https://transparenttextures.com/patterns/cubes.png')` }} />
-
-      <main className="relative z-10 p-6 lg:p-10 max-w-[1600px] mx-auto space-y-8">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-2">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <span className="bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-[10px] font-black px-2 py-0.5 rounded tracking-tighter uppercase">PMC Assignments</span>
-              <span className="text-slate-400 text-xs font-bold flex items-center gap-1 uppercase tracking-widest"><ShieldCheck className="h-3.5 w-3.5" /> Bharat Mandapam</span>
-            </div>
-            <h1 className="text-4xl font-black tracking-tight uppercase">Assigned Contracts</h1>
+    <div className="space-y-12 animate-in fade-in duration-1000 pb-20 font-sans selection:bg-indigo-100 p-10 bg-slate-50/50 min-h-screen">
+      
+      {/* ─── APEX HEADER ─────────────────────────────────────── */}
+      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6 relative">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border-2 border-indigo-200">
+            <ShieldCheck size={14} className="animate-pulse" /> PMC Secretariat
           </div>
-          <button className="flex items-center gap-2 px-4 py-2.5 text-xs font-black bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-sm hover:bg-slate-50 transition-all uppercase tracking-wider">
-            <Download className="h-4 w-4" /> Export Queue
-          </button>
+          <h1 className="text-6xl font-black text-slate-800 tracking-tighter uppercase leading-none">Assigned Queue</h1>
+          <p className="text-slate-500 font-medium text-xl italic underline underline-offset-8 decoration-indigo-200">
+            Technical classification, agency forwarding, and site-engineer deployment dashboard.
+          </p>
         </div>
+        <div className="flex gap-4">
+          <Button variant="outline" className="h-16 px-8 rounded-3xl border-2 border-indigo-200 font-black uppercase tracking-widest text-[10px] text-indigo-700 bg-white shadow-xl hover:bg-indigo-50 transition-all">
+            <History size={20} className="mr-2" /> Assignment History
+          </Button>
+          <Button className="h-16 px-10 rounded-3xl bg-gradient-to-r from-indigo-600 to-blue-600 text-white font-black uppercase tracking-widest text-[10px] shadow-2xl hover:shadow-[0_0_20px_theme(colors.indigo.400)] transition-all gap-2 border-none">
+            <Download size={20} className="text-indigo-100" /> Export Queue
+          </Button>
+        </div>
+      </div>
 
-        {/* KPI Cards */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {kpiData.map((kpi, i) => (
-            <div key={i} className={`relative overflow-hidden ${kpi.bg} border ${kpi.border} p-6 rounded-2xl shadow-sm group hover:shadow-md transition-all`}>
-              <div className="absolute inset-0 opacity-[0.05] pointer-events-none" style={{ backgroundImage: `url('https://transparenttextures.com/patterns/cubes.png')` }} />
-              <div className="relative z-10">
-                <div className="flex justify-between items-start mb-5">
-                  <div className={`p-2.5 ${kpi.iconBg} text-white rounded-xl shadow-lg`}><kpi.icon className="h-5 w-5" /></div>
-                  <ArrowUpRight className="h-5 w-5 text-slate-300" />
+      {/* ─── ACTION INDICATOR TILES ────────────────────────────── */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {kpiData.map((item, i) => (
+          <div key={i} className={`group relative p-8 rounded-[32px] overflow-hidden transition-all duration-500 h-44 flex flex-col justify-between shadow-lg bg-gradient-to-br ${item.color} text-white`}>
+            <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/diagonal-striped-brick.png')]" />
+            <div className="relative z-10 flex flex-col justify-between h-full w-full">
+              <div className="flex items-center justify-between">
+                <div className="h-10 w-10 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
+                  <item.icon size={20} className="text-white drop-shadow-md" />
                 </div>
-                <p className={`text-[10px] font-black uppercase tracking-[0.15em] mb-1 opacity-70 ${kpi.textColor}`}>{kpi.title}</p>
-                <h3 className="text-3xl font-black tracking-tighter">{kpi.value}</h3>
+                {item.alert && <div className="h-2.5 w-2.5 rounded-full bg-white animate-ping shadow-[0_0_10px_white]" />}
+              </div>
+              <div>
+                <p className="text-4xl font-black tracking-tighter drop-shadow-sm leading-none">{item.value}</p>
+                <div className="flex flex-col gap-0.5 mt-2">
+                  <p className="text-[10px] font-black uppercase tracking-widest opacity-95 leading-tight">{item.title}</p>
+                  <p className="text-[9px] font-medium opacity-75 uppercase tracking-wider leading-none">{item.subtitle}</p>
+                </div>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
+      </div>
 
-        {/* Main Content Table */}
-        <div className="bg-white/70 dark:bg-slate-900/70 backdrop-blur-sm border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900">
-                <th className="py-5 px-8">Contract Details</th>
-                <th className="py-5 px-6">Classification</th>
-                <th className="py-5 px-6">Agency</th>
-                <th className="py-5 px-6 text-center">Deadline</th>
-                <th className="py-5 px-8 text-right">Technical Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-              {contracts.map((task, i) => (
-                <tr key={task.id} className="group hover:bg-white dark:hover:bg-slate-800/80 transition-all">
-                  <td className="py-6 px-8">
-                    <div className="font-mono text-[10px] font-bold text-indigo-500 mb-1">{task.id}</div>
-                    <div className="font-bold text-sm">{task.title}</div>
-                    <div className="flex items-center gap-3 mt-1.5 opacity-60">
-                       <span className="flex items-center gap-1 text-[10px] font-black uppercase"><MapPin size={12}/> {task.location}</span>
-                       <span className="flex items-center gap-1 text-[10px] font-black uppercase">{categoryIcons[task.category]} {task.category}</span>
+      {/* ─── MAIN LEDGER ───────────────────────────────────────── */}
+      <div className="grid grid-cols-1 gap-8">
+        <Card className="rounded-[48px] border-none shadow-xl overflow-hidden bg-white">
+          <CardHeader className="p-0">
+            <div className="p-10 bg-gradient-to-r from-slate-800 via-slate-950 to-indigo-950 text-white relative overflow-hidden">
+              <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+              <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10">
+                <div className="flex items-center gap-5">
+                  <div className="h-14 w-14 rounded-3xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg">
+                    <Briefcase size={28} className="text-white" />
+                  </div>
+                  <div className="space-y-1">
+                    <CardTitle className="text-2xl font-black uppercase tracking-tight">Contract Assignment Ledger</CardTitle>
+                    <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">Technical Classification & PMC Deployment Queue</p>
+                  </div>
+                </div>
+                <div className="flex bg-white/10 p-1.5 rounded-2xl backdrop-blur-md border border-white/10">
+                  <Button variant="ghost" className="h-10 rounded-xl px-4 text-[10px] font-black text-white uppercase hover:bg-white/20">All Works</Button>
+                  <Button variant="ghost" className="h-10 rounded-xl px-4 text-[10px] font-black text-white/50 uppercase hover:bg-white/20">Direct NBCC</Button>
+                  <Button variant="ghost" className="h-10 rounded-xl px-4 text-[10px] font-black text-white/50 uppercase hover:bg-white/20">Forwarded</Button>
+                </div>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="p-8 space-y-6 bg-slate-50/30 relative">
+            <div className="absolute inset-0 opacity-[0.02] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" />
+            
+            <div className="relative z-10 space-y-6">
+              {contracts.map((task) => (
+                <div key={task.id} className="p-8 rounded-[32px] border border-slate-100 bg-white shadow-sm hover:shadow-xl transition-all duration-300">
+                  <div className="flex flex-col xl:flex-row justify-between gap-8">
+                    
+                    {/* Info Block */}
+                    <div className="space-y-4 flex-1">
+                      <div className="flex items-center gap-3">
+                        <span className="font-mono text-xs font-black text-indigo-700 tracking-wider bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-md">{task.id}</span>
+                        <NBCCStatusBadge status={task.status} />
+                        <Badge className="bg-slate-900 text-white text-[9px] font-black uppercase rounded-full px-3 py-0.5">{task.scale} Scale</Badge>
+                      </div>
+                      <div>
+                        <h4 className="font-black text-2xl text-slate-800 tracking-tight leading-tight">{task.title}</h4>
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">
+                          <span className="flex items-center gap-1.5 text-slate-600"><MapPin size={14} className="text-indigo-500" /> {task.location}</span>
+                          <span className="text-slate-200">•</span>
+                          <span className="flex items-center gap-1.5"><Wrench size={14} className="text-indigo-500" /> {task.category}</span>
+                          <span className="text-slate-200">•</span>
+                          <span className="flex items-center gap-1.5 text-rose-600"><Clock size={14} /> Deadline: {task.priority}</span>
+                        </div>
+                      </div>
+                      <p className="text-xs font-bold text-slate-500 leading-relaxed max-w-2xl">{task.description}</p>
                     </div>
-                  </td>
-                  <td className="py-6 px-6">
-                    <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded ${task.scale === 'Large' ? 'bg-indigo-100 text-indigo-700' : 'bg-emerald-100 text-emerald-700'}`}>{task.scale} Scale</span>
-                  </td>
-                  <td className="py-6 px-6 font-black text-[11px] uppercase text-slate-600 dark:text-slate-300">{task.agency}</td>
-                  <td className="py-6 px-6 text-center text-amber-600 font-black text-[10px] uppercase"><Clock size={12} className="inline mr-1" />{task.deadline}</td>
-                  <td className="py-6 px-8 text-right">
-                    <div className="flex flex-col items-end gap-2">
-                      {task.status === 'Under Review' && (
-                        <button onClick={() => openPanel(task, "review")} className="px-4 py-1.5 text-[10px] font-black uppercase bg-indigo-600 text-white rounded shadow-lg shadow-indigo-500/20 hover:bg-indigo-700 transition-all">Technical Review</button>
+
+                    {/* Action Block */}
+                    <div className="flex flex-col sm:flex-row xl:flex-col justify-center gap-4 min-w-[240px]">
+                      {task.status === "Under Review" && (
+                        <Button 
+                          onClick={() => { setSelectedTask(task); setActionType("review"); }}
+                          className="h-14 rounded-2xl bg-indigo-600 text-white font-black uppercase tracking-widest text-[10px] shadow-lg hover:bg-indigo-700 transition-all gap-2"
+                        >
+                          <FileSearch size={18} /> Technical Review
+                        </Button>
                       )}
-                      {(task.status === 'Engineer Assigned' || task.status === 'Approved') && task.agency === 'NBCC Direct' && (
-                        <button onClick={() => openPanel(task, "assign")} className="px-4 py-1.5 text-[10px] font-black uppercase border-2 border-slate-900 dark:border-white rounded hover:bg-slate-900 hover:text-white dark:hover:bg-white transition-all">Assign Engineers</button>
+                      {task.status === "Engineer Assigned" && (
+                        <Button 
+                          onClick={() => { setSelectedTask(task); setActionType("assign"); }}
+                          className="h-14 rounded-2xl bg-slate-900 text-white font-black uppercase tracking-widest text-[10px] shadow-lg hover:bg-slate-800 transition-all gap-2"
+                        >
+                          <HardHat size={18} /> Deploy Workforce
+                        </Button>
                       )}
-                      {task.agency.includes('Shapoorji') && (task.status === 'Estimation Submitted') && (
-                        <button onClick={() => openPanel(task, "estimation")} className="px-4 py-1.5 text-[10px] font-black uppercase border border-slate-300 dark:border-slate-700 rounded hover:bg-white dark:hover:bg-slate-800 transition-all">Review Estimation</button>
+                      {task.status === "Estimation Submitted" && (
+                        <Button 
+                          onClick={() => { setSelectedTask(task); setActionType("estimation"); }}
+                          className="h-14 rounded-2xl bg-purple-600 text-white font-black uppercase tracking-widest text-[10px] shadow-lg hover:bg-purple-700 transition-all gap-2"
+                        >
+                          <IndianRupee size={18} /> Audit Estimation
+                        </Button>
                       )}
-                      <button className="text-[9px] font-black text-slate-400 uppercase hover:text-indigo-600 flex items-center gap-1 tracking-widest">Full Scope <ArrowUpRight size={12} /></button>
+                      <Button variant="outline" className="h-14 rounded-2xl border-2 border-slate-100 font-black uppercase tracking-widest text-[10px] text-slate-400 hover:text-slate-600 bg-transparent">
+                        View Full Scope
+                      </Button>
                     </div>
-                  </td>
-                </tr>
+                  </div>
+
+                  {/* Progress / Meta Info */}
+                  <div className="mt-8 pt-6 border-t border-slate-50 flex flex-col md:flex-row items-center gap-6">
+                    <div className="w-full md:w-64 space-y-2">
+                       <div className="flex justify-between text-[8px] font-black uppercase text-slate-400 tracking-widest">
+                         <span>Execution Progress</span>
+                         <span>{task.progress}%</span>
+                       </div>
+                       <Progress value={task.progress} className="h-2 bg-slate-100 [&>div]:bg-indigo-600" />
+                    </div>
+                    <div className="flex items-center gap-3 ml-auto">
+                      <div className="flex -space-x-2">
+                        {[1,2,3].map(i => <div key={i} className="h-8 w-8 rounded-full border-2 border-white bg-slate-200" />)}
+                      </div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Assigned PMC: <span className="text-slate-900">{task.agency}</span></p>
+                    </div>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
-        </div>
-      </main>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
-      {/* --- SIDE MANAGEMENT PANEL (WORKABLE) --- */}
+      {/* ─── SECRETARIAT SIDE PANEL ───────────────────────────── */}
       {selectedTask && (
         <>
-          <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[60]" onClick={closePanel} />
-          <div className="fixed inset-y-0 right-0 w-full max-w-lg bg-white dark:bg-slate-950 z-[70] shadow-2xl border-l border-slate-200 dark:border-slate-800 flex flex-col animate-in slide-in-from-right duration-300">
+          <div className="fixed inset-0 bg-slate-950/40 backdrop-blur-md z-[60] animate-in fade-in" onClick={() => setSelectedTask(null)} />
+          <div className="fixed inset-y-0 right-0 w-full max-w-xl bg-white z-[70] shadow-[-20px_0_50px_rgba(0,0,0,0.1)] flex flex-col animate-in slide-in-from-right duration-500">
             
-            <div className="px-8 py-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50 dark:bg-slate-900/50">
-              <div>
-                <h2 className="text-xl font-black uppercase tracking-tight">
-                  {actionType === "review" && "Technical Classification"}
-                  {actionType === "assign" && "Engineer Allocation"}
-                  {actionType === "estimation" && "Estimation Audit"}
-                </h2>
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{selectedTask.id} • {selectedTask.category}</p>
-              </div>
-              <button onClick={closePanel} className="p-2 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-full transition-colors"><X size={20} /></button>
+            <div className="p-10 bg-slate-900 text-white relative overflow-hidden">
+               <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+               <div className="relative z-10 flex justify-between items-start">
+                  <div className="space-y-2">
+                    <div className="h-12 w-12 rounded-2xl bg-indigo-500 flex items-center justify-center shadow-lg mb-4">
+                       <Activity size={24} />
+                    </div>
+                    <h2 className="text-3xl font-black uppercase tracking-tighter">Command Panel</h2>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">{selectedTask.id} • {selectedTask.category}</p>
+                  </div>
+                  <button onClick={() => setSelectedTask(null)} className="h-12 w-12 rounded-full border border-white/10 flex items-center justify-center hover:bg-white/10 transition-all"><X size={24} /></button>
+               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-8 space-y-8">
+            <div className="flex-1 overflow-y-auto p-10 space-y-10">
               <section className="space-y-4">
-                <h3 className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em]">Contract Context</h3>
-                <div className="p-4 bg-slate-50 dark:bg-slate-900 rounded-xl border border-slate-100 dark:border-slate-800 relative overflow-hidden">
-                  <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: `url('https://transparenttextures.com/patterns/cubes.png')` }} />
-                  <h4 className="font-bold text-lg leading-tight mb-2">{selectedTask.title}</h4>
-                  <p className="text-sm text-slate-500">{selectedTask.description}</p>
+                <h3 className="text-[11px] font-black text-indigo-600 uppercase tracking-[0.2em]">Contextual Data</h3>
+                <div className="p-6 bg-slate-50 rounded-[32px] border border-slate-100 relative overflow-hidden">
+                  <div className="absolute inset-0 opacity-[0.03] bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" />
+                  <h4 className="font-black text-xl text-slate-800 leading-tight mb-2">{selectedTask.title}</h4>
+                  <p className="text-sm font-medium text-slate-500 leading-relaxed">{selectedTask.description}</p>
                 </div>
               </section>
 
-              {/* ACTION TYPE: REVIEW */}
               {actionType === "review" && (
                 <section className="space-y-6">
-                   <h3 className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em]">Project Classification</h3>
+                   <h3 className="text-[11px] font-black text-indigo-600 uppercase tracking-[0.2em]">Project Classification</h3>
                    <div className="grid gap-4">
-                      <div 
-                        onClick={() => setTempScale("Small")}
-                        className={`p-4 border-2 rounded-xl flex items-center gap-4 cursor-pointer transition-all ${tempScale === "Small" ? "border-indigo-600 bg-indigo-50/50" : "border-slate-100 hover:border-slate-300"}`}
-                      >
-                        <HardHat className={tempScale === "Small" ? "text-indigo-600" : "text-slate-400"} size={24} />
-                        <div>
-                          <p className="font-black text-xs uppercase">Small Scale (NBCC Direct)</p>
-                          <p className="text-[10px] text-slate-500 uppercase font-bold">Internal PMC Execution</p>
+                      {["Small (NBCC Direct)", "Large (Forward to Partner)"].map((opt, i) => (
+                        <div key={i} className="p-6 border-2 border-slate-100 rounded-[28px] flex items-center gap-5 cursor-pointer hover:border-indigo-600 hover:bg-indigo-50/50 transition-all group">
+                           <div className="h-12 w-12 rounded-2xl bg-slate-100 group-hover:bg-indigo-600 group-hover:text-white transition-colors flex items-center justify-center">
+                              {i === 0 ? <HardHat size={20} /> : <ExternalLink size={20} />}
+                           </div>
+                           <div>
+                              <p className="font-black text-sm uppercase tracking-tight">{opt}</p>
+                              <p className="text-[10px] text-slate-400 uppercase font-bold tracking-widest">{i === 0 ? "Internal Deployment" : "Forward for Estimation"}</p>
+                           </div>
+                           <div className="ml-auto h-6 w-6 rounded-full border-2 border-slate-200" />
                         </div>
-                        {tempScale === "Small" && <CheckCircle2 className="ml-auto text-indigo-600" size={20} />}
-                      </div>
-                      <div 
-                        onClick={() => setTempScale("Large")}
-                        className={`p-4 border-2 rounded-xl flex items-center gap-4 cursor-pointer transition-all ${tempScale === "Large" ? "border-indigo-600 bg-indigo-50/50" : "border-slate-100 hover:border-slate-300"}`}
-                      >
-                        <ExternalLink className={tempScale === "Large" ? "text-indigo-600" : "text-slate-400"} size={24} />
-                        <div>
-                          <p className="font-black text-xs uppercase">Large Scale (Shapoorji)</p>
-                          <p className="text-[10px] text-slate-500 uppercase font-bold">Forward to External Partner</p>
-                        </div>
-                        {tempScale === "Large" && <CheckCircle2 className="ml-auto text-indigo-600" size={20} />}
-                      </div>
+                      ))}
                    </div>
                 </section>
               )}
 
-              {/* ACTION TYPE: ASSIGN */}
-              {actionType === "assign" && (
-                <section className="space-y-4 font-bold">
-                  <h3 className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em]">Select Deployment Team</h3>
-                  <div className="space-y-3 font-medium">
-                    <select className="w-full bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs">
-                        <option>Select Lead Engineer...</option>
-                        <option>Rahul Varma (Civil)</option>
-                    </select>
-                    <input type="number" placeholder="Field Workforce Count" className="w-full bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs" />
-                  </div>
-                </section>
-              )}
-
-              {/* ACTION TYPE: ESTIMATION */}
               {actionType === "estimation" && (
-                <section className="space-y-4">
-                  <h3 className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em]">Cost Analysis Summary</h3>
-                  <div className="bg-emerald-50 dark:bg-emerald-900/10 p-6 rounded-2xl border border-emerald-100 dark:border-emerald-800/50">
-                    <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Shapoorji Submitted Quote</p>
-                    <div className="text-2xl font-black flex items-center gap-1 mt-1 font-mono tracking-tighter">
-                      <IndianRupee size={24} /> 4,50,000.00
-                    </div>
-                  </div>
-                  <textarea placeholder="Technical remarks for ITPO Review..." className="w-full h-32 bg-slate-50 p-4 rounded-xl border border-slate-200 text-xs outline-none focus:border-indigo-600 transition-colors" />
+                <section className="space-y-6">
+                   <h3 className="text-[11px] font-black text-indigo-600 uppercase tracking-[0.2em]">Partner Cost Quote</h3>
+                   <div className="bg-emerald-50 p-8 rounded-[32px] border-2 border-emerald-100 text-center">
+                      <p className="text-[10px] font-black text-emerald-600 uppercase tracking-widest mb-2">Total Project Estimate</p>
+                      <div className="text-5xl font-black text-slate-800 flex items-center justify-center gap-1 tracking-tighter">
+                        <IndianRupee size={32} /> 12,45,000
+                      </div>
+                   </div>
+                   <textarea placeholder="Enter technical remarks for the Secretariat..." className="w-full h-40 bg-slate-50 rounded-[28px] border-2 border-slate-100 p-6 text-sm font-bold focus:border-indigo-600 outline-none transition-all" />
                 </section>
               )}
             </div>
 
-            <div className="px-8 py-6 border-t border-slate-100 dark:border-slate-800 flex gap-4">
-              <button onClick={closePanel} className="flex-1 py-3 text-[10px] font-black uppercase tracking-widest border-2 border-slate-200 dark:border-slate-800 rounded-lg hover:bg-slate-50 transition-all">Discard</button>
-              <button 
-                onClick={handleSubmit}
-                disabled={isSubmitting}
-                className="flex-1 py-3 text-[10px] font-black uppercase tracking-widest bg-indigo-600 text-white rounded-lg shadow-lg shadow-indigo-500/20 hover:bg-indigo-700 transition-all flex items-center justify-center gap-2"
-              >
-                {isSubmitting ? <><Loader2 size={14} className="animate-spin" /> Processing...</> : "Submit Selection"}
-              </button>
+            <div className="p-10 border-t border-slate-100 flex gap-4">
+               <Button onClick={() => setSelectedTask(null)} variant="outline" className="flex-1 h-16 rounded-2xl border-2 border-slate-200 font-black uppercase text-[10px] tracking-[0.2em]">Discard</Button>
+               <Button className="flex-1 h-16 rounded-2xl bg-slate-900 text-white font-black uppercase text-[10px] tracking-[0.2em] shadow-2xl">Confirm Assignment</Button>
             </div>
           </div>
         </>
