@@ -229,7 +229,7 @@ export default function EnterpriseDashboard() {
           </Card>
 
           {/* ALLOCATION WIDGET */}
-          <Card className="rounded-[40px] border-none shadow-lg bg-white overflow-hidden group">
+          <Card className="rounded-[40px] border-none shadow-lg bg-white overflow-hidden group p-0">
             <div className="p-6 flex items-center justify-between text-white relative bg-gradient-to-r from-emerald-500 to-teal-600">
               <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
               <div className="flex items-center gap-4 relative z-10">
