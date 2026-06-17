@@ -152,7 +152,7 @@ export default function SiteReports() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95 }}
             >
-              <Card className="rounded-[40px] border-none shadow-xl overflow-hidden bg-white group hover:shadow-2xl transition-all duration-500">
+              <Card className="rounded-[40px] border-none shadow-xl overflow-hidden bg-white group hover:shadow-2xl transition-all duration-500 p-0">
                 {/* Dark Header with Gradient Accent */}
                 <div className={cn("p-8 relative overflow-hidden bg-gradient-to-br text-white", report.color)}>
                   <div className="absolute inset-0 opacity-40 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/diagonal-striped-brick.png')]" />
