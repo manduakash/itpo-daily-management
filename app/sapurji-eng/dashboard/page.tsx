@@ -259,7 +259,7 @@ export default function ShapoorjiEngineerDashboard() {
                 </div>
                 <CardTitle className="text-lg font-black uppercase tracking-widest">Site Assignment Ledger</CardTitle>
               </div>
-              <Badge className="bg-indigo-500 text-white font-black text-[9px] uppercase tracking-widest px-4 py-1.5 rounded-full border-none shadow-lg">Live Portal</Badge>
+              {/* <Badge className="bg-indigo-500 text-white font-black text-[9px] uppercase tracking-widest px-4 py-1.5 rounded-full border-none shadow-lg">Live Portal</Badge> */}
             </div>
           </div>
         </CardHeader>
