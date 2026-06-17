@@ -107,7 +107,6 @@ export default function NBCCForwardToShapoorji() {
                 <div className="h-10 w-10 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
                   <item.icon size={20} className="text-white drop-shadow-md" />
                 </div>
-                {item.alert && <div className="h-2.5 w-2.5 rounded-full bg-white animate-ping shadow-[0_0_10px_white]" />}
               </div>
               <div>
                 <p className="text-4xl font-black tracking-tighter drop-shadow-sm leading-none">{item.value}</p>
@@ -125,7 +124,7 @@ export default function NBCCForwardToShapoorji() {
         
         {/* LEFT: PARTNER QUEUE LEDGER (2/3) */}
         <div className="lg:col-span-2">
-          <Card className="rounded-[48px] border-none shadow-xl overflow-hidden bg-white h-full flex flex-col">
+          <Card className="rounded-[48px] border-none shadow-xl overflow-hidden bg-white h-full flex flex-col p-0">
             <CardHeader className="p-0">
               <div className="p-10 bg-gradient-to-r from-slate-800 via-slate-950 to-indigo-950 text-white relative overflow-hidden">
                 <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
@@ -188,7 +187,7 @@ export default function NBCCForwardToShapoorji() {
 
         {/* RIGHT SIDEBAR: ANALYTICS (1/3) */}
         <div className="space-y-8">
-          <Card className="rounded-[40px] border-none shadow-lg bg-white overflow-hidden group">
+          <Card className="rounded-[40px] border-none shadow-lg bg-white overflow-hidden group p-0">
             <div className="p-6 flex items-center justify-between text-white relative bg-gradient-to-r from-indigo-600 to-blue-700">
               <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
               <div className="flex items-center gap-4 relative z-10">

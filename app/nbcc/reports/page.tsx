@@ -158,7 +158,6 @@ export default function ReportsAnalyticsPage() {
                 <div className="h-10 w-10 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
                   <item.icon size={20} className="text-white drop-shadow-md" />
                 </div>
-                {item.alert && <div className="h-2.5 w-2.5 rounded-full bg-white animate-ping shadow-[0_0_10px_white]" />}
               </div>
               <div>
                 <p className="text-4xl font-black tracking-tighter drop-shadow-sm leading-none">{item.value}</p>
@@ -176,7 +175,7 @@ export default function ReportsAnalyticsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
         {/* LEFT: ON-DEMAND COMPILER (1/3) */}
-        <Card className="rounded-[40px] border-none shadow-xl bg-white overflow-hidden flex flex-col group">
+        <Card className="rounded-[40px] border-none shadow-xl bg-white overflow-hidden flex flex-col group p-0">
           <div className="p-8 bg-gradient-to-r from-slate-800 via-slate-950 to-indigo-950 text-white relative overflow-hidden">
             <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
             <div className="relative z-10">
@@ -248,7 +247,7 @@ export default function ReportsAnalyticsPage() {
         </Card>
 
         {/* RIGHT: REPORT LEDGER (2/3) */}
-        <Card className="lg:col-span-2 rounded-[48px] border-none shadow-xl overflow-hidden bg-white">
+        <Card className="lg:col-span-2 rounded-[48px] border-none shadow-xl overflow-hidden bg-white p-0">
           <CardHeader className="p-0">
             <div className="p-10 bg-gradient-to-r from-slate-900 via-indigo-950 to-indigo-900 text-white relative overflow-hidden">
               <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
