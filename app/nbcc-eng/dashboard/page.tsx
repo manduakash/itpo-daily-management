@@ -68,7 +68,7 @@ const stats = [
     subtitle: "Critical Estimations",
     icon: Clock,
     color: "from-amber-500 to-orange-600",
-    alert: true,
+    // alert: true,
 
   },
   {
@@ -152,7 +152,7 @@ export default function NBCCEngineeringDashboard() {
                 <div className="h-10 w-10 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform shadow-inner">
                   <item.icon size={20} className="text-white drop-shadow-md" />
                 </div>
-                {item.alert && <div className="h-2.5 w-2.5 rounded-full bg-white animate-ping shadow-[0_0_10px_white]" />}
+                {/* {item.alert && <div className="h-2.5 w-2.5 rounded-full bg-white animate-ping shadow-[0_0_10px_white]" />} */}
               </div>
               <div>
                 <p className="text-4xl font-black tracking-tighter drop-shadow-sm leading-none">{item.value}</p>
