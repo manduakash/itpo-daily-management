@@ -1,344 +1,371 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  LineChart,
-  Line,
-  Legend
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell
 } from "recharts";
-import { 
-  Briefcase, 
-  Clock, 
-  CheckCircle2, 
-  AlertCircle, 
-  IndianRupee, 
-  ArrowUpRight,
-  TrendingUp,
-  Building2,
-  ArrowRight,
-  Plus
+import {
+  HardHat, FileText, Clock, ArrowUpRight,
+  MapPin, ClipboardCheck, History, Plus,
+  ArrowLeft, Upload, Save, CheckCircle2,
+  AlertCircle, X, ShieldCheck, Zap,
+  Briefcase, Activity, Target, Search, Filter, LayoutGrid, ChevronRight
 } from "lucide-react";
-import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 
-// Mock Data
-const kpiData = [
-  {
-    title: "Total Raised Contracts",
-    value: "48",
-    description: "+4 from last week",
-    icon: Briefcase,
-    color: "text-blue-600 bg-blue-50 dark:bg-blue-950/50 dark:text-blue-400",
-  },
-  {
-    title: "Pending Your Approval",
-    value: "07",
-    description: "Requires immediate review",
-    icon: Clock,
-    color: "text-amber-600 bg-amber-50 dark:bg-amber-950/50 dark:text-amber-400",
-  },
-  {
-    title: "Active Works (WIP)",
-    value: "18",
-    description: "Assigned to NBCC / Shapoorji",
-    icon: TrendingUp,
-    color: "text-emerald-600 bg-emerald-50 dark:bg-emerald-950/50 dark:text-emerald-400",
-  },
-  {
-    title: "Inspection Pending",
-    value: "05",
-    description: "Ready for ITPO verification",
-    icon: CheckCircle2,
-    color: "text-indigo-600 bg-indigo-50 dark:bg-indigo-950/50 dark:text-indigo-400",
-  },
-];
+// Texture URLs for that premium feel
+const textures = {
+  mainBg: "https://www.transparenttextures.com/patterns/symphony.png",
+  cardBg: "https://www.transparenttextures.com/patterns/carbon-fibre.png",
+  bricks: "https://www.transparenttextures.com/patterns/diagonal-striped-brick.png",
+  cubes: "https://www.transparenttextures.com/patterns/cubes.png",
+};
 
-const contractStatusData = [
-  { name: "Raised", count: 4 },
-  { name: "Under Review", count: 6 },
-  { name: "Est. Submitted", count: 7 },
-  { name: "Approved", count: 5 },
-  { name: "WIP", count: 18 },
-  { name: "Inspection", count: 5 },
-  { name: "Closed", count: 3 },
-];
-
-const categoryData = [
-  { name: "General Civil", value: 14, color: "#3b82f6" },
-  { name: "Electrical", value: 12, color: "#eab308" },
-  { name: "Plumbing", value: 8, color: "#06b6d4" },
-  { name: "Mechanical", value: 6, color: "#ec4899" },
-  { name: "AMC/CMC", value: 8, color: "#10b981" },
-];
-
-const monthlyExpenditure = [
-  { month: "Jan", budget: 45, actual: 40 },
-  { month: "Feb", budget: 60, actual: 55 },
-  { month: "Mar", budget: 85, actual: 92 },
-  { month: "Apr", budget: 70, actual: 68 },
-  { month: "May", budget: 95, actual: 85 },
-  { month: "Jun", budget: 120, actual: 110 },
-];
-
-const pendingApprovals = [
-  {
-    id: "CON-2024-089",
-    title: "Renovation of Convention Hall 3 & 4",
-    agency: "Shapoorji (Case 3)",
-    type: "Civil",
-    scale: "Large",
-    estimation: "₹45,50,000",
-    status: "Estimation Submitted",
-  },
-  {
-    id: "CON-2024-092",
-    title: "Plumbing Overhaul & Piping Replacement",
-    agency: "NBCC (Case 2)",
-    type: "Plumbing",
-    scale: "Medium",
-    estimation: "₹12,20,000",
-    status: "Estimation Submitted",
-  },
-  {
-    id: "CON-2024-101",
-    title: "HVAC Unit Replacement Area G",
-    agency: "NBCC & Shapoorji (Case 1)",
-    type: "Mechanical",
-    scale: "Large",
-    estimation: "Pending Bids",
-    status: "Under Review",
-  },
-];
-
-export default function ITPODashboard() {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return <div className="p-8 text-center text-muted-foreground">Loading dashboard layout...</div>;
-  }
+/**
+ * CUSTOM STATUS BADGE
+ */
+function EnterpriseStatusBadge({ status }: { status: string }) {
+  const styles: Record<string, string> = {
+    "Completed": "bg-emerald-100 text-emerald-700 border-emerald-200",
+    "In Progress": "bg-blue-100 text-blue-700 border-blue-200",
+    "Pending": "bg-amber-100 text-amber-700 border-amber-200",
+    "Rejected": "bg-rose-100 text-rose-700 border-rose-200",
+  };
 
   return (
-    <div className="space-y-8">
-      {/* Welcome & Quick Action Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-3xl font-semibold tracking-tight">ITPO Dashboard</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Overview of infrastructure contracts, estimations, and ongoing maintenance activities.
+    <Badge variant="outline" className={cn("text-[9px] font-black uppercase tracking-widest px-3 py-0.5 border-2 rounded-full", styles[status] || "bg-slate-100 text-slate-700")}>
+      {status}
+    </Badge>
+  );
+}
+
+export default function ShapoorjiEnterpriseDashboard() {
+  const [mounted, setMounted] = useState(false);
+  const [view, setView] = useState("dashboard");
+
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return null;
+
+  const kpiData = [
+    { title: "Assigned Contracts", value: "24", trend: "04 New", icon: HardHat, color: "from-indigo-600 to-blue-700", status: "active" },
+    { title: "Pending Estimations", value: "06", trend: "High Priority", icon: FileText, color: "from-orange-500 to-rose-600", status: "risk", alert: true },
+    { title: "Ongoing Projects", value: "12", trend: "On Schedule", icon: Activity, color: "from-emerald-500 to-teal-600", status: "success" },
+  ];
+
+  const ongoingTasks = [
+    { id: "CON-772", name: "Exhibition Hall Repair", client: "Bharat Mandapam", value: "₹4.5L", status: "In Progress", progress: 60, update: "Material arrived at Site A" },
+    { id: "CON-810", name: "Hall 3 Interior", client: "ITPO Admin", value: "₹12.8L", status: "Pending", progress: 15, update: "Design approval pending" },
+    { id: "CON-901", name: "Stone Paving", client: "VIP Entrance", value: "₹2.2L", status: "Completed", progress: 100, update: "Final handover finished" },
+  ];
+
+  const timelineData = [
+    { name: "Mon", val: 40 }, { name: "Tue", val: 35 }, { name: "Wed", val: 65 }, 
+    { name: "Thu", val: 55 }, { name: "Fri", val: 80 }
+  ];
+
+  const DashboardHome = () => (
+    <div className="space-y-10 animate-in fade-in duration-700">
+      {/* --- HEADER --- */}
+      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6 relative">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 bg-slate-900 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] border-2 border-slate-800">
+            <ShieldCheck size={14} className="text-orange-400" /> SP Partner Portal v2.4
+          </div>
+          <h1 className="text-6xl font-black text-slate-800 tracking-tighter uppercase leading-none">
+            Partner <span className="text-orange-600">Ops</span>
+          </h1>
+          <p className="text-slate-500 font-medium text-xl italic underline underline-offset-8 decoration-slate-200">
+            Shapoorji Pallonji • Bharat Mandapam Maintenance Division.
           </p>
         </div>
-        <div className="flex items-center gap-3">
-          <Link href="/itpo/raise-contract">
-            <button className="inline-flex items-center justify-center gap-2 rounded-md bg-primary text-primary-foreground text-sm font-medium h-10 px-4 hover:bg-primary/90 transition-colors">
-              <Plus className="h-4 w-4" />
-              <span>Raise New Contract</span>
-            </button>
-          </Link>
+        
+        <div className="flex gap-4">
+          <Button 
+            variant="outline" 
+            onClick={() => setView("logs")}
+            className="h-16 px-8 rounded-3xl border-2 border-slate-200 font-black uppercase tracking-widest text-[10px] text-slate-700 bg-white shadow-xl hover:bg-slate-50 transition-all"
+          >
+            <History size={20} className="mr-2" /> Audit Logs
+          </Button>
+          <Button 
+            onClick={() => setView("estimation-form")}
+            className="h-16 px-10 rounded-3xl bg-gradient-to-r from-orange-600 to-orange-700 text-white font-black uppercase tracking-widest text-[10px] shadow-2xl hover:shadow-[0_0_20px_rgba(249,115,22,0.3)] transition-all gap-2 border-none"
+          >
+            <Plus size={20} className="text-white" /> New Estimation
+          </Button>
         </div>
       </div>
 
-      {/* KPI Cards Grid */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {kpiData.map((kpi, i) => {
-          const Icon = kpi.icon;
-          return (
-            <div key={i} className="rounded-xl border border-border bg-card p-6 text-card-foreground shadow-sm">
-              <div className="flex items-center justify-between space-y-0 pb-2">
-                <span className="text-xs font-semibold text-muted-foreground tracking-wider uppercase">
-                  {kpi.title}
-                </span>
-                <div className={`p-2 rounded-lg ${kpi.color}`}>
-                  <Icon className="h-4 w-4" />
+      {/* --- KPI TILES --- */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {kpiData.map((item, i) => (
+          <div
+            key={i}
+            className={`group relative p-8 rounded-[32px] overflow-hidden transition-all duration-500 h-44 flex flex-col justify-between shadow-lg hover:shadow-2xl bg-gradient-to-br ${item.color} text-white`}
+          >
+            <div className="absolute inset-0 opacity-20 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/diagonal-striped-brick.png')]" />
+            <div className="relative z-10 flex flex-col justify-between h-full w-full">
+              <div className="flex items-center justify-between">
+                <div className="h-10 w-10 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
+                  <item.icon size={20} className="text-white drop-shadow-md" />
+                </div>
+                {item.alert && <div className="h-2.5 w-2.5 rounded-full bg-white animate-ping shadow-[0_0_10px_white]" />}
+              </div>
+              <div>
+                <p className="text-4xl font-black tracking-tighter drop-shadow-sm leading-none">{item.value}</p>
+                <div className="flex flex-col gap-0.5 mt-2">
+                  <p className="text-[10px] font-black uppercase tracking-widest opacity-95 leading-tight">{item.title}</p>
+                  <p className="text-[9px] font-medium opacity-75 uppercase tracking-wider leading-none">Status: {item.trend}</p>
                 </div>
               </div>
-              <div className="mt-2">
-                <div className="text-2xl font-bold tracking-tight">{kpi.value}</div>
-                <p className="text-xs text-muted-foreground mt-1">{kpi.description}</p>
-              </div>
             </div>
-          );
-        })}
+          </div>
+        ))}
       </div>
 
-      {/* Charts Section */}
-      <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">
-        {/* Contract Status Bar Chart */}
-        <div className="col-span-1 lg:col-span-2 rounded-xl border border-border bg-card p-6 shadow-sm">
-          <div className="flex flex-col space-y-1.5 pb-6">
-            <h3 className="text-sm font-semibold tracking-tight">Contract Lifecycle Distribution</h3>
-            <p className="text-xs text-muted-foreground">Number of contracts currently sitting in each status phase</p>
-          </div>
-          <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={contractStatusData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                <XAxis dataKey="name" fontSize={11} tickLine={false} axisLine={false} />
-                <YAxis fontSize={11} tickLine={false} axisLine={false} allowDecimals={false} />
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: "hsl(var(--card))", 
-                    borderColor: "hsl(var(--border))",
-                    borderRadius: "8px",
-                    fontSize: "12px"
-                  }} 
-                />
-                <Bar dataKey="count" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} barSize={36} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Category Share Donut Chart */}
-        <div className="rounded-xl border border-border bg-card p-6 shadow-sm">
-          <div className="flex flex-col space-y-1.5 pb-6">
-            <h3 className="text-sm font-semibold tracking-tight">Contracts by Category</h3>
-            <p className="text-xs text-muted-foreground">Proportional distribution of current work categories</p>
-          </div>
-          <div className="h-52 relative flex items-center justify-center">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={categoryData}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={4}
-                  dataKey="value"
-                >
-                  {categoryData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip 
-                  contentStyle={{ 
-                    backgroundColor: "hsl(var(--card))", 
-                    borderColor: "hsl(var(--border))",
-                    borderRadius: "8px",
-                    fontSize: "12px" 
-                  }} 
-                />
-              </PieChart>
-            </ResponsiveContainer>
-            {/* Center Summary Label */}
-            <div className="absolute flex flex-col items-center justify-center">
-              <span className="text-xl font-bold">48</span>
-              <span className="text-[10px] text-muted-foreground uppercase font-medium">Total Items</span>
-            </div>
-          </div>
-          {/* Legend Details */}
-          <div className="grid grid-cols-2 gap-2 mt-4">
-            {categoryData.map((cat, i) => (
-              <div key={i} className="flex items-center gap-2 text-xs">
-                <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: cat.color }} />
-                <span className="text-muted-foreground truncate">{cat.name} ({cat.value})</span>
+      {/* --- MAIN GRID --- */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* LEFT: WORK LEDGER */}
+        <div className="lg:col-span-2">
+          <Card className="rounded-[48px] border-none shadow-xl overflow-hidden bg-white p-0">
+            <CardHeader className="p-0">
+              <div className="p-10 bg-gradient-to-r from-slate-800 to-slate-950 text-white relative overflow-hidden">
+                <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: `url(${textures.cardBg})` }} />
+                <div className="flex justify-between items-center relative z-10">
+                  <div className="flex items-center gap-5">
+                    <div className="h-14 w-14 rounded-3xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center">
+                      <LayoutGrid size={28} className="text-white" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-2xl font-black uppercase tracking-tight">Active Work Ledger</CardTitle>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Ongoing Maintenance & Operations</p>
+                    </div>
+                  </div>
+                </div>
               </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Monthly Trends & Pending Approvals */}
-      <div className="grid gap-6 md:grid-cols-1 lg:grid-cols-3">
-        {/* Budget Execution Trend */}
-        <div className="col-span-1 rounded-xl border border-border bg-card p-6 shadow-sm flex flex-col justify-between">
-          <div>
-            <div className="flex flex-col space-y-1.5 pb-4">
-              <h3 className="text-sm font-semibold tracking-tight">Approved Budget vs. Expenditure</h3>
-              <p className="text-xs text-muted-foreground">Monthly summary of financial layouts (in Lakhs ₹)</p>
-            </div>
-            <div className="h-56">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={monthlyExpenditure} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
-                  <XAxis dataKey="month" fontSize={11} tickLine={false} axisLine={false} />
-                  <YAxis fontSize={11} tickLine={false} axisLine={false} />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: "hsl(var(--card))", 
-                      borderColor: "hsl(var(--border))",
-                      borderRadius: "8px",
-                      fontSize: "12px"
-                    }} 
-                  />
-                  <Legend verticalAlign="top" height={36} iconType="circle" iconSize={8} wrapperStyle={{ fontSize: "11px" }} />
-                  <Line type="monotone" dataKey="budget" name="Approved Limit" stroke="#3b82f6" strokeWidth={2} activeDot={{ r: 4 }} />
-                  <Line type="monotone" dataKey="actual" name="Actual Cost" stroke="#10b981" strokeWidth={2} />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        </div>
-
-        {/* Action Needed Component Table */}
-        <div className="col-span-1 lg:col-span-2 rounded-xl border border-border bg-card p-6 shadow-sm">
-          <div className="flex items-center justify-between pb-4">
-            <div className="flex flex-col space-y-1.5">
-              <h3 className="text-sm font-semibold tracking-tight">Estimations Pending Action</h3>
-              <p className="text-xs text-muted-foreground">Estimations submitted by NBCC / Shapoorji awaiting ITPO Approval</p>
-            </div>
-            <Link href="/itpo/approvals" className="text-xs text-primary font-medium flex items-center gap-1 hover:underline">
-              <span>View All</span>
-              <ArrowRight className="h-3.5 w-3.5" />
-            </Link>
-          </div>
-          
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs border-collapse">
-              <thead>
-                <tr className="border-b border-border text-muted-foreground font-medium">
-                  <th className="py-3 px-2">ID</th>
-                  <th className="py-3 px-2">Title</th>
-                  <th className="py-3 px-2">Assigned Agency</th>
-                  <th className="py-3 px-2">Est. Cost</th>
-                  <th className="py-3 px-2">Status</th>
-                  <th className="py-3 px-2 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/60">
-                {pendingApprovals.map((item, i) => (
-                  <tr key={i} className="hover:bg-accent/40 transition-colors">
-                    <td className="py-3.5 px-2 font-mono font-medium">{item.id}</td>
-                    <td className="py-3.5 px-2">
-                      <div className="flex flex-col">
-                        <span className="font-medium text-foreground">{item.title}</span>
-                        <span className="text-[10px] text-muted-foreground">{item.type} • {item.scale} Scale</span>
+            </CardHeader>
+            <CardContent className="p-8 space-y-6 bg-slate-50/30 relative">
+              <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{ backgroundImage: `url(${textures.cubes})` }} />
+              {ongoingTasks.map((task) => (
+                <div key={task.id} className="p-6 rounded-[32px] border border-slate-100 bg-white shadow-sm hover:shadow-xl transition-all duration-300">
+                  <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-3">
+                        <span className="font-mono text-xs font-black text-orange-700 tracking-wider bg-orange-50 border border-orange-100 px-2 py-0.5 rounded-md">{task.id}</span>
+                        <EnterpriseStatusBadge status={task.status} />
                       </div>
-                    </td>
-                    <td className="py-3.5 px-2 text-muted-foreground">{item.agency}</td>
-                    <td className="py-3.5 px-2 font-medium text-foreground">{item.estimation}</td>
-                    <td className="py-3.5 px-2">
-                      <span className="inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium bg-amber-100 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
-                        {item.status}
-                      </span>
-                    </td>
-                    <td className="py-3.5 px-2 text-right">
-                      <Link href={`/itpo/approvals/${item.id}`}>
-                        <button className="inline-flex h-7 items-center justify-center rounded-md bg-secondary text-secondary-foreground text-[11px] font-semibold px-3 border border-border hover:bg-accent transition-colors">
-                          Review
-                        </button>
-                      </Link>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      <h4 className="font-black text-lg text-slate-800 tracking-tight mt-2">{task.name}</h4>
+                      <div className="flex items-center gap-x-2 text-[9px] font-bold text-slate-400 uppercase tracking-widest pt-1">
+                        <MapPin size={10} className="text-orange-500" />
+                        <span>{task.client}</span>
+                        <span className="text-slate-200">•</span>
+                        <span className="text-slate-600 font-black">{task.value}</span>
+                      </div>
+                    </div>
+                    <Button variant="outline" className="rounded-2xl border-2 border-slate-100 px-4 h-10 font-black text-[9px] uppercase">View Details</Button>
+                  </div>
+                  <div className="space-y-3 bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
+                    <Progress value={task.progress} className="h-2.5 bg-slate-100 [&>div]:bg-gradient-to-r [&>div]:from-orange-500 [&>div]:to-orange-700 rounded-full" />
+                    <p className="text-[10px] font-bold text-slate-500 italic">
+                      <span className="text-orange-600 font-black uppercase not-italic tracking-wider mr-1">Latest Log:</span> {task.update}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* RIGHT SIDEBAR */}
+        <div className="space-y-8">
+          <Card className="rounded-[40px] border-none shadow-lg bg-white overflow-hidden p-0">
+            <div className="p-6 flex items-center justify-between text-white relative bg-gradient-to-r from-slate-800 to-indigo-900">
+              <div className="absolute inset-0 opacity-20" style={{ backgroundImage: `url(${textures.cardBg})` }} />
+              <div className="flex items-center gap-4 relative z-10">
+                <Activity size={18} className="text-white" />
+                <h3 className="text-[11px] font-black uppercase tracking-[0.2em]">Intensity Trend</h3>
+              </div>
+              <ArrowUpRight size={18} className="text-white/70" />
+            </div>
+            <div className="p-8">
+              <div className="h-[200px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={timelineData}>
+                    <defs>
+                      <linearGradient id="colorVal" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#f97316" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#f97316" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                    <XAxis dataKey="name" hide />
+                    <YAxis hide />
+                    <Tooltip />
+                    <Area type="monotone" dataKey="val" stroke="#f97316" strokeWidth={4} fill="url(#colorVal)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </Card>
+
+          <div className="p-8 rounded-[40px] bg-slate-900 text-white relative overflow-hidden shadow-2xl">
+            <div className="absolute inset-0 opacity-20" style={{ backgroundImage: `url(${textures.cardBg})` }} />
+            <div className="relative z-10 space-y-4">
+              <div className="flex justify-between items-center">
+                <Zap size={24} className="text-orange-400 animate-pulse" />
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Resource Load</span>
+              </div>
+              <div>
+                <h3 className="text-4xl font-black tracking-tighter">92.8%</h3>
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-[0.2em] mt-1">Labor Capacity</p>
+              </div>
+              <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-orange-400 to-orange-600 w-[92%]" />
+              </div>
+              <p className="text-[10px] text-slate-400 italic leading-relaxed">
+                Workforce fully deployed across Halls 1-5.
+              </p>
+            </div>
           </div>
         </div>
       </div>
+    </div>
+  );
+
+  const EstimationForm = () => (
+    <div className="max-w-4xl mx-auto animate-in slide-in-from-bottom-8 duration-700">
+      <Button 
+        variant="ghost" 
+        onClick={() => setView("dashboard")} 
+        className="mb-8 font-black uppercase tracking-widest text-[10px] text-slate-500 hover:text-slate-800"
+      >
+        <ArrowLeft className="mr-2 h-4 w-4" /> Back to Operations
+      </Button>
+
+      <Card className="rounded-[48px] border-none shadow-2xl overflow-hidden bg-white">
+        <div className="p-10 bg-slate-900 text-white relative overflow-hidden">
+          <div className="absolute inset-0 opacity-20" style={{ backgroundImage: `url(${textures.cardBg})` }} />
+          <div className="relative z-10">
+            <h2 className="text-4xl font-black uppercase tracking-tighter">New Work Estimation</h2>
+            <p className="text-orange-500 text-[10px] font-black tracking-[0.3em] uppercase mt-2">Document ID: SP-EST-2024-099</p>
+          </div>
+        </div>
+
+        <CardContent className="p-12 space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Contract Reference</label>
+              <select className="w-full h-14 px-6 rounded-2xl border-2 border-slate-100 bg-slate-50 text-sm font-bold focus:border-orange-500 outline-none transition-all appearance-none">
+                <option>CON-102: Plaza Renovation</option>
+                <option>CON-105: Hall 4 Mechanical</option>
+              </select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Proposed Amount (INR)</label>
+              <input type="number" placeholder="0.00" className="w-full h-14 px-6 rounded-2xl border-2 border-slate-100 bg-slate-50 text-sm font-bold focus:border-orange-500 outline-none transition-all" />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Scope Analysis</label>
+            <textarea rows={4} className="w-full p-6 rounded-[32px] border-2 border-slate-100 bg-slate-50 text-sm font-bold focus:border-orange-500 outline-none transition-all" placeholder="Describe the technical requirements..." />
+          </div>
+
+          <div className="p-10 border-4 border-dashed border-slate-100 rounded-[40px] bg-slate-50/50 flex flex-col items-center justify-center gap-4 hover:border-orange-200 hover:bg-orange-50/30 transition-all cursor-pointer group">
+            <div className="h-16 w-16 rounded-full bg-white shadow-md flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Upload className="h-6 w-6 text-orange-600" />
+            </div>
+            <div className="text-center">
+              <p className="text-sm font-black text-slate-700 uppercase tracking-tight">Upload BOQ & Technicals</p>
+              <p className="text-[10px] text-slate-400 font-bold uppercase mt-1">PDF, XLSX up to 25MB</p>
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-4 pt-6">
+            <Button variant="ghost" onClick={() => setView("dashboard")} className="h-14 px-8 rounded-2xl font-black uppercase tracking-widest text-[10px]">Discard</Button>
+            <Button className="h-14 px-10 rounded-2xl bg-slate-900 text-white font-black uppercase tracking-widest text-[10px] shadow-xl hover:bg-black transition-all gap-2">
+              <Save size={18} /> Submit for Review
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const LogsHistory = () => (
+    <div className="max-w-5xl mx-auto animate-in fade-in duration-700">
+      <div className="flex items-center justify-between mb-10">
+        <Button variant="ghost" onClick={() => setView("dashboard")} className="font-black uppercase tracking-widest text-[10px] text-slate-500">
+          <ArrowLeft className="mr-2 h-4 w-4" /> Dashboard
+        </Button>
+        <h2 className="text-3xl font-black text-slate-800 tracking-tighter uppercase">Audit Ledger</h2>
+      </div>
+
+      <Card className="rounded-[48px] border-none shadow-xl overflow-hidden bg-white">
+        <div className="divide-y divide-slate-100">
+          {[
+            { id: 1, action: "Estimation Submitted", target: "CON-772 Facade Repair", time: "2 hours ago", user: "R. Sharma", status: "success" },
+            { id: 2, action: "Engineer Assigned", target: "CON-810 Hall 3 Interior", time: "5 hours ago", user: "System", status: "info" },
+            { id: 3, action: "Daily Progress Uploaded", target: "CON-901 Stone Paving", time: "Yesterday", user: "A. Khan", status: "success" },
+          ].map((log) => (
+            <div key={log.id} className="p-8 hover:bg-slate-50 transition-all flex items-start gap-6 group">
+              <div className={cn(
+                "h-12 w-12 rounded-2xl flex items-center justify-center shrink-0 shadow-sm transition-transform group-hover:scale-110",
+                log.status === 'success' ? 'bg-emerald-100 text-emerald-600' : 'bg-blue-100 text-blue-600'
+              )}>
+                {log.status === 'success' ? <CheckCircle2 size={20} /> : <Activity size={20} />}
+              </div>
+              <div className="flex-1">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h4 className="text-lg font-black text-slate-800 tracking-tight">{log.action}</h4>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Ref: {log.target}</p>
+                  </div>
+                  <span className="text-[10px] font-black text-slate-300 uppercase tracking-[0.2em]">{log.time}</span>
+                </div>
+                <div className="mt-4 flex items-center gap-2">
+                    <div className="h-6 w-6 rounded-full bg-slate-200" />
+                    <span className="text-[9px] font-black text-slate-500 uppercase">Operator: {log.user}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-[#f8fafc] relative font-sans selection:bg-orange-100">
+      {/* Background Texture Overlay */}
+      <div className="fixed inset-0 pointer-events-none opacity-[0.03]" style={{ backgroundImage: `url(${textures.mainBg})` }} />
+
+      <main className="max-w-7xl mx-auto px-6 lg:px-12 py-16 relative z-10">
+        {view === "dashboard" && <DashboardHome />}
+        {view === "estimation-form" && <EstimationForm />}
+        {view === "logs" && <LogsHistory />}
+
+        <footer className="mt-24 pt-10 border-t-4 border-slate-100">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6 opacity-40 grayscale hover:grayscale-0 transition-all">
+             <div className="flex items-center gap-4">
+                <div className="h-12 w-12 bg-slate-900 rounded-2xl flex items-center justify-center font-black text-white text-xl shadow-lg">S</div>
+                <div className="leading-none">
+                    <p className="text-[12px] font-black uppercase tracking-[0.3em]">Shapoorji Pallonji</p>
+                    <p className="text-[9px] font-bold uppercase tracking-[0.1em] text-slate-500">Engineering & Construction</p>
+                </div>
+             </div>
+             <div className="text-right">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em]">Enterprise Node: DEL-CENTRAL-01</p>
+                <p className="text-[9px] font-bold text-slate-400 uppercase mt-1">© 2024 Contract Mgmt Portal • SP-ITPO</p>
+             </div>
+          </div>
+        </footer>
+      </main>
     </div>
   );
 }
