@@ -2,6 +2,10 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { 
   Search, 
   Filter, 
@@ -13,11 +17,42 @@ import {
   CheckCircle2, 
   FileText,
   Hammer,
-  ArrowUpRight,
+  Building2,
+  HardHat,
   MoreVertical
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-// --- Mock Data ---
+// ─── Status & Priority Badge Helpers ─────────────────────────────────────
+function AssignmentStatusBadge({ status }: { status: string }) {
+  const styles: Record<string, string> = {
+    "Active": "bg-indigo-100 text-indigo-700 border-indigo-200",
+    "Pending Approval": "bg-amber-100 text-amber-700 border-amber-200",
+    "Completed": "bg-emerald-100 text-emerald-700 border-emerald-200",
+  };
+
+  return (
+    <Badge variant="outline" className={cn("text-[9px] font-black uppercase tracking-widest px-3 py-0.5 border-2 rounded-full", styles[status])}>
+      {status}
+    </Badge>
+  );
+}
+
+function PriorityBadge({ priority }: { priority: string }) {
+  const styles: Record<string, string> = {
+    "Critical": "text-rose-600 bg-rose-50 border-rose-100",
+    "High": "text-orange-600 bg-orange-50 border-orange-100",
+    "Medium": "text-indigo-600 bg-indigo-50 border-indigo-100",
+    "Low": "text-slate-500 bg-slate-50 border-slate-100",
+  };
+  return (
+    <span className={cn("text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded border-2", styles[priority])}>
+      {priority} Priority
+    </span>
+  );
+}
+
+// ─── Mock Data ───────────────────────────────────────────────────
 const assignments = [
   {
     id: "CON-9901",
@@ -29,7 +64,7 @@ const assignments = [
     deadline: "Oct 30, 2023",
     progress: 65,
     description: "Installation of Italian marble and leveling of the sub-floor.",
-    gradient: "from-rose-500/5 to-transparent"
+    color: "from-slate-800 to-indigo-950"
   },
   {
     id: "CON-9905",
@@ -41,7 +76,7 @@ const assignments = [
     deadline: "Nov 05, 2023",
     progress: 30,
     description: "Installing secondary ducting for the new lounge area.",
-    gradient: "from-amber-500/5 to-transparent"
+    color: "from-indigo-600 to-blue-700"
   },
   {
     id: "CON-9844",
@@ -53,23 +88,9 @@ const assignments = [
     deadline: "Nov 12, 2023",
     progress: 0,
     description: "Testing of LED strips on the glass fins of the main building.",
-    gradient: "from-blue-500/5 to-transparent"
-  },
-  {
-    id: "CON-9721",
-    title: "Plumbing Pressure Test",
-    location: "Kitchen Area G",
-    category: "Plumbing",
-    priority: "Low",
-    status: "Completed",
-    deadline: "Oct 15, 2023",
-    progress: 100,
-    description: "Final pressure test for main supply lines completed.",
-    gradient: "from-emerald-500/5 to-transparent"
+    color: "from-amber-500 to-orange-600"
   }
 ];
-
-const tabs = ["All Assignments", "Active", "Pending Approval", "Completed"];
 
 export default function MyAssignments() {
   const [activeTab, setActiveTab] = useState("All Assignments");
@@ -83,171 +104,143 @@ export default function MyAssignments() {
   });
 
   return (
-    <div className="p-4 md:p-8 space-y-8 bg-[#FDFDFD] dark:bg-slate-950 min-h-screen">
+    <div className="space-y-12 animate-in fade-in duration-1000 pb-20 font-sans selection:bg-indigo-100 p-10">
       
-      {/* --- Header Section --- */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <motion.div 
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-        >
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">My Assignments</h1>
-          <p className="text-slate-500 mt-2 flex items-center gap-2">
-            <Hammer className="h-4 w-4 text-indigo-500" />
-            Manage and track your active site works
+      {/* APEX HEADER */}
+      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6 relative">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border-2 border-indigo-200">
+            <HardHat size={14} className="animate-pulse" /> Shapoorji Site Execution
+          </div>
+          <h1 className="text-6xl font-black text-slate-800 tracking-tighter uppercase leading-none">Work <span className="text-indigo-600">Ledger</span></h1>
+          <p className="text-slate-500 font-medium text-xl italic underline underline-offset-8 decoration-indigo-200">
+            Management of active site assignments, resource deployment, and task progress.
           </p>
-        </motion.div>
+        </div>
 
-        <motion.div 
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="flex items-center gap-3"
-        >
-          <div className="relative group">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors" />
+        <div className="flex gap-4">
+          <div className="relative hidden lg:block">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
             <input 
               type="text" 
-              placeholder="Search contracts..."
-              className="pl-10 pr-4 py-2.5 w-full md:w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all shadow-sm"
+              placeholder="SEARCH ASSIGNMENTS..." 
+              className="h-16 pl-12 pr-6 rounded-3xl border-2 border-slate-100 font-black uppercase tracking-widest text-[10px] bg-white shadow-xl focus:outline-none focus:border-indigo-300 w-64 transition-all"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <button className="p-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-600 hover:bg-slate-50 transition-all shadow-sm">
-            <Filter className="h-5 w-5" />
-          </button>
-        </motion.div>
+          <Button 
+            variant="outline"
+            className="h-16 px-8 rounded-3xl border-2 border-indigo-200 font-black uppercase tracking-widest text-[10px] text-indigo-700 bg-white shadow-xl hover:bg-indigo-50 transition-all"
+          >
+            <Filter size={20} className="mr-2" /> Filter Tasks
+          </Button>
+        </div>
       </div>
 
-      {/* --- Filter Tabs --- */}
-      <div className="flex items-center border-b border-slate-100 dark:border-slate-800 overflow-x-auto scrollbar-hide">
-        {tabs.map((tab) => (
+      {/* FILTER TABS */}
+      <div className="flex flex-wrap items-center gap-3">
+        {["All Assignments", "Active", "Pending Approval", "Completed"].map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`relative px-6 py-4 text-sm font-semibold whitespace-nowrap transition-colors ${
-              activeTab === tab ? "text-indigo-600" : "text-slate-500 hover:text-slate-700"
-            }`}
+            className={cn(
+              "px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border-2",
+              activeTab === tab 
+                ? "bg-slate-900 text-white border-slate-900 shadow-xl scale-105" 
+                : "bg-white text-slate-400 border-slate-100 hover:border-slate-200"
+            )}
           >
             {tab}
-            {activeTab === tab && (
-              <motion.div 
-                layoutId="activeTab"
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-indigo-600"
-              />
-            )}
           </button>
         ))}
       </div>
 
-      {/* --- Assignment Grid --- */}
-      <motion.div 
-        layout
-        className="grid grid-cols-1 xl:grid-cols-2 gap-6"
-      >
+      {/* ASSIGNMENTS GRID */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-10">
         <AnimatePresence mode="popLayout">
           {filteredAssignments.map((work) => (
             <motion.div
               key={work.id}
               layout
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ duration: 0.2 }}
-              className={`group relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all p-6`}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
             >
-              {/* Subtle Gradient Glow */}
-              <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl ${work.gradient} pointer-events-none`} />
-
-              <div className="relative z-10 flex flex-col h-full">
-                {/* Top Row: ID & Status */}
-                <div className="flex items-start justify-between mb-4">
-                  <div className="space-y-1">
-                    <span className="text-[10px] font-bold tracking-widest text-indigo-500 uppercase">{work.id}</span>
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-white group-hover:text-indigo-600 transition-colors">
-                      {work.title}
-                    </h3>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-tight ${
-                      work.status === 'Active' ? 'bg-indigo-50 text-indigo-600' :
-                      work.status === 'Completed' ? 'bg-emerald-50 text-emerald-600' :
-                      'bg-slate-100 text-slate-600'
-                    }`}>
-                      {work.status}
-                    </span>
-                    <button className="text-slate-300 hover:text-slate-600 transition-colors">
-                      <MoreVertical className="h-5 w-5" />
-                    </button>
+              <Card className="rounded-[48px] border-none shadow-xl overflow-hidden bg-white group hover:shadow-2xl transition-all duration-500">
+                {/* Header Section */}
+                <div className={cn("p-8 relative overflow-hidden bg-gradient-to-br text-white", work.color)}>
+                  <div className="absolute inset-0 opacity-40 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/diagonal-striped-brick.png')]" />
+                  
+                  <div className="relative z-10 flex justify-between items-start">
+                    <div className="flex flex-col gap-1">
+                      <span className="font-mono text-[10px] font-black text-white/60 tracking-widest uppercase">ID: {work.id}</span>
+                      <h3 className="text-2xl font-black uppercase tracking-tight leading-tight group-hover:text-indigo-200 transition-colors">
+                        {work.title}
+                      </h3>
+                    </div>
+                    <div className="flex flex-col items-end gap-2">
+                       <AssignmentStatusBadge status={work.status} />
+                       <PriorityBadge priority={work.priority} />
+                    </div>
                   </div>
                 </div>
 
-                {/* Info Pills */}
-                <div className="flex flex-wrap gap-3 mb-6">
-                  <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500 bg-slate-50 dark:bg-slate-800 px-2.5 py-1.5 rounded-lg border border-slate-100 dark:border-slate-700">
-                    <MapPin className="h-3.5 w-3.5 text-indigo-400" />
-                    {work.location}
-                  </div>
-                  <div className="flex items-center gap-1.5 text-xs font-medium text-slate-500 bg-slate-50 dark:bg-slate-800 px-2.5 py-1.5 rounded-lg border border-slate-100 dark:border-slate-700">
-                    <Calendar className="h-3.5 w-3.5 text-indigo-400" />
-                    Due: {work.deadline}
-                  </div>
-                  <div className={`flex items-center gap-1.5 text-xs font-bold px-2.5 py-1.5 rounded-lg border ${
-                    work.priority === 'Critical' ? 'text-rose-600 bg-rose-50 border-rose-100' : 
-                    'text-amber-600 bg-amber-50 border-amber-100'
-                  }`}>
-                    <AlertCircle className="h-3.5 w-3.5" />
-                    {work.priority}
-                  </div>
-                </div>
+                <CardContent className="p-10 space-y-8 bg-slate-50/30 relative">
+                   <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" />
+                   
+                   <div className="relative z-10 space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="flex items-center gap-3 text-slate-500">
+                          <MapPin size={16} className="text-indigo-500" />
+                          <span className="text-[11px] font-black uppercase tracking-widest">{work.location}</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-slate-500">
+                          <Calendar size={16} className="text-indigo-500" />
+                          <span className="text-[11px] font-black uppercase tracking-widest">DUE: {work.deadline}</span>
+                        </div>
+                      </div>
 
-                <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2 mb-6">
-                  {work.description}
-                </p>
+                      <p className="text-xs font-bold text-slate-400 uppercase tracking-widest leading-relaxed border-l-4 border-indigo-100 pl-4">
+                        {work.description}
+                      </p>
 
-                {/* Progress Section */}
-                <div className="mt-auto pt-6 border-t border-slate-50 dark:border-slate-800">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Completion Progress</span>
-                    <span className="text-xs font-black text-indigo-600">{work.progress}%</span>
-                  </div>
-                  <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                    <motion.div 
-                      initial={{ width: 0 }}
-                      animate={{ width: `${work.progress}%` }}
-                      transition={{ duration: 1 }}
-                      className={`h-full rounded-full ${
-                        work.status === 'Completed' ? 'bg-emerald-500' : 'bg-indigo-500'
-                      }`}
-                    />
-                  </div>
+                      {/* Progress Section */}
+                      <div className="pt-4 space-y-3">
+                        <div className="flex justify-between items-end">
+                          <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Execution Progress</span>
+                          <span className="text-sm font-black text-slate-900">{work.progress}%</span>
+                        </div>
+                        <Progress value={work.progress} className={cn("h-2.5 bg-slate-200", work.status === 'Completed' ? "[&>div]:bg-emerald-500" : "[&>div]:bg-indigo-600")} />
+                      </div>
 
-                  {/* Actions */}
-                  <div className="mt-6 flex items-center justify-between gap-3">
-                    <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all group">
-                      <FileText className="h-4 w-4 text-slate-400 group-hover:text-indigo-500" />
-                      View Details
-                    </button>
-                    <button className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 text-white rounded-xl text-xs font-bold hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-100 dark:shadow-none group">
-                      Update Progress
-                      <ChevronRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                    </button>
-                  </div>
-                </div>
-              </div>
+                      {/* Action Buttons */}
+                      <div className="flex gap-4 pt-4">
+                        <Button className="flex-1 h-14 rounded-2xl bg-white border-2 border-slate-200 text-slate-800 hover:bg-slate-50 font-black uppercase tracking-widest text-[10px] shadow-sm transition-all">
+                          View Site Details
+                        </Button>
+                        <Button className="flex-1 h-14 rounded-2xl bg-slate-900 text-white hover:bg-indigo-600 font-black uppercase tracking-widest text-[10px] shadow-xl transition-all flex items-center justify-center gap-2">
+                          Update Progress <ChevronRight size={16} />
+                        </Button>
+                      </div>
+                   </div>
+                </CardContent>
+              </Card>
             </motion.div>
           ))}
         </AnimatePresence>
-      </motion.div>
+      </div>
 
-      {/* --- Empty State --- */}
+      {/* EMPTY STATE */}
       {filteredAssignments.length === 0 && (
-        <div className="flex flex-col items-center justify-center py-20">
-          <div className="h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center mb-4">
-            <CheckCircle2 className="h-10 w-10 text-slate-200" />
+        <div className="flex flex-col items-center justify-center py-32 space-y-6">
+          <div className="h-24 w-24 rounded-full bg-slate-100 flex items-center justify-center text-slate-300">
+            <CheckCircle2 size={48} />
           </div>
-          <h3 className="text-lg font-semibold text-slate-900">No Assignments Found</h3>
-          <p className="text-slate-500">Try adjusting your filters or search query.</p>
+          <div className="text-center">
+            <h3 className="text-2xl font-black uppercase tracking-tight text-slate-800">No Assignments Found</h3>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">Adjust your search parameters or ledger filters</p>
+          </div>
         </div>
       )}
     </div>

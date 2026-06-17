@@ -1,63 +1,103 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, 
-  ResponsiveContainer, AreaChart, Area, Cell, PieChart, Pie
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
+  ResponsiveContainer, AreaChart, Area
 } from "recharts";
 import {
-  Briefcase, Clock, HardHat, ArrowUpRight, Users, 
-  FileText, Forward, Construction, Filter, Search, 
-  CheckCircle, ChevronRight, Activity
+  Briefcase,
+  Clock,
+  HardHat,
+  Forward,
+  PlusCircle,
+  Wrench,
+  Construction,
+  Search,
+  Filter,
+  Users,
+  ArrowUpRight,
+  CheckCircle2,
+  Activity,
+  Building2,
+  ChevronRight
 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
-// --- Framer Motion Variants ---
-const fadeInUp = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5 }
-};
+// ─── Status Badge Helper (NBCC Specific) ───────────────────────────
+function NBCCStatusBadge({ status }: { status: string }) {
+  const styles: Record<string, string> = {
+    "New": "bg-blue-100 text-blue-700 border-blue-200",
+    "Review": "bg-amber-100 text-amber-700 border-amber-200",
+    "Execution": "bg-indigo-100 text-indigo-700 border-indigo-200",
+    "Forwarded": "bg-purple-100 text-purple-700 border-purple-200",
+    "On Site": "bg-emerald-100 text-emerald-700 border-emerald-200",
+  };
 
-const staggerContainer = {
-  animate: { transition: { staggerChildren: 0.1 } }
-};
+  return (
+    <Badge variant="outline" className={cn("text-[9px] font-black uppercase tracking-widest px-3 py-0.5 border-2 rounded-full", styles[status] || styles["New"])}>
+      {status}
+    </Badge>
+  );
+}
 
-// --- Custom Components ---
+// ─── Mock Data ───────────────────────────────────────
+const stats = [
+  {
+    title: "New Assignments",
+    value: "24",
+    subtitle: "Awaiting Engineer Allocation",
+    icon: Briefcase,
+    color: "from-blue-500 to-indigo-600",
 
-const StatCard = ({ title, value, trend, icon: Icon, gradient, delay }: any) => (
-  <motion.div
-    variants={fadeInUp}
-    initial="initial"
-    animate="animate"
-    transition={{ delay }}
-    whileHover={{ y: -5, transition: { duration: 0.2 } }}
-    className={`relative overflow-hidden rounded-2xl border border-white/50 p-6 shadow-xl shadow-slate-200/50 bg-gradient-to-br ${gradient}`}
-  >
-    <div className="relative z-10">
-      <div className="flex items-center justify-between">
-        <div className="p-3 bg-white/50 backdrop-blur-md rounded-xl shadow-sm">
-          <Icon className="w-6 h-6 text-slate-700" />
-        </div>
-        <span className="flex items-center gap-1 text-[10px] font-bold px-2 py-1 bg-white/40 backdrop-blur-sm rounded-full text-slate-600 uppercase tracking-tighter">
-          <Activity size={10} /> {trend}
-        </span>
-      </div>
-      <div className="mt-5">
-        <h3 className="text-4xl font-extrabold text-slate-800 tracking-tight">{value}</h3>
-        <p className="text-sm font-semibold text-slate-600/80 mt-1 uppercase tracking-wide">{title}</p>
-      </div>
-    </div>
-  </motion.div>
-);
+  },
+  {
+    title: "Review Required",
+    value: "09",
+    subtitle: "Critical Estimations",
+    icon: Clock,
+    color: "from-amber-500 to-orange-600",
+    // alert: true,
 
-const GlassCard = ({ children, className = "" }: any) => (
-  <div className={`bg-white/70 backdrop-blur-xl border border-white/80 rounded-3xl shadow-2xl shadow-slate-200/40 ${className}`}>
-    {children}
-  </div>
-);
+  },
+  {
+    title: "In Execution",
+    value: "11",
+    subtitle: "Active Field Operations",
+    icon: HardHat,
+    color: "from-emerald-500 to-teal-600",
+
+  },
+  {
+    title: "sp Forwarded",
+    value: "24",
+    subtitle: "Awaiting Engineer Allocation",
+    icon: Briefcase,
+    color: "from-purple-500 to-violet-600",
+  },
+];
+
+const chartData = [
+  { name: "Civil", nbcc: 12, sp: 5 },
+  { name: "Electrical", nbcc: 9, sp: 3 },
+  { name: "Mechanical", nbcc: 4, sp: 8 },
+  { name: "Plumbing", nbcc: 15, sp: 2 },
+  { name: "AMC", nbcc: 7, sp: 1 },
+];
 
 export default function NBCCEngineeringDashboard() {
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -66,255 +106,215 @@ export default function NBCCEngineeringDashboard() {
 
   if (!mounted) return null;
 
-  const stats = [
-    {
-      title: "New Assignments",
-      value: "24",
-      trend: "Increased",
-      icon: Briefcase,
-      gradient: "from-blue-50 via-blue-100 to-indigo-200",
-    },
-    {
-      title: "Review Required",
-      value: "09",
-      trend: "Priority",
-      icon: Clock,
-      gradient: "from-orange-50 via-orange-100 to-amber-200",
-    },
-    {
-      title: "In Execution",
-      value: "11",
-      trend: "On Track",
-      icon: HardHat,
-      gradient: "from-emerald-50 via-emerald-100 to-teal-200",
-    },
-    {
-      title: "SP Forwarded",
-      value: "04",
-      trend: "Large Scale",
-      icon: Forward,
-      gradient: "from-purple-50 via-purple-100 to-fuchsia-200",
-    },
-  ];
-
   return (
-    <div className="min-h-screen bg-[#f8fafc] p-6 lg:p-10 font-sans text-slate-900">
-      
-      {/* Top Navigation / Header */}
-      <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6"
-      >
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold">N</div>
-            <span className="text-xs font-bold tracking-widest text-indigo-600 uppercase">PMC Management</span>
-          </div>
-          <h1 className="text-4xl font-black tracking-tight text-slate-800">
-           NBCC Engineering <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">Dashboard</span>
-          </h1>
-          <p className="text-slate-500 font-medium mt-1">Bharat Mandapam Infrastructure Control</p>
-        </div>
+    <div className="space-y-12 animate-in fade-in duration-1000 pb-20 font-sans selection:bg-indigo-100 p-10">
 
-        <div className="flex items-center gap-4">
+      {/* HEADER SECTION */}
+      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6 relative">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border-2 border-indigo-200">
+            <Building2 size={14} className="animate-pulse" /> NBCC PMC Division
+          </div>
+          <h1 className="text-6xl font-black text-slate-800 tracking-tighter uppercase leading-none">Engineering <span className="text-indigo-600">Unit</span></h1>
+          <p className="text-slate-500 font-medium text-xl italic underline underline-offset-8 decoration-indigo-200">
+            Bharat Mandapam Infrastructure Control & Field Allocation Panel.
+          </p>
+        </div>
+        <div className="flex gap-4">
           <div className="relative hidden lg:block">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
-            <input 
-              type="text" 
-              placeholder="Search contracts..." 
-              className="pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 w-64 shadow-sm"
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+            <input
+              type="text"
+              placeholder="SEARCH CONTRACTS..."
+              className="h-16 pl-12 pr-6 rounded-3xl border-2 border-slate-100 font-black uppercase tracking-widest text-[10px] bg-white shadow-xl focus:outline-none focus:border-indigo-300 w-64 transition-all"
             />
           </div>
-          <button className="p-2.5 bg-white border border-slate-200 rounded-2xl shadow-sm hover:bg-slate-50 transition-all">
-            <Filter className="w-5 h-5 text-slate-600" />
-          </button>
-          <button className="flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-2xl font-bold text-sm shadow-xl hover:shadow-indigo-200 transition-all hover:bg-slate-800">
-            <Users size={18} /> Allocate Team
-          </button>
+          <Button
+            // onClick={() => router.push("/nbcc/allocate")}
+            className="h-16 px-10 rounded-3xl bg-gradient-to-r from-slate-800 to-slate-950 text-white font-black uppercase tracking-widest text-[10px] shadow-2xl hover:shadow-[0_0_20px_theme(colors.slate.400)] transition-all gap-2 group border-none"
+          >
+            <Users size={20} className="text-slate-400" /> Allocate Team
+          </Button>
         </div>
-      </motion.div>
+      </div>
 
-      {/* Stats Grid */}
-      <motion.div 
-        variants={staggerContainer}
-        initial="initial"
-        animate="animate"
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10"
-      >
-        {stats.map((s, i) => (
-          <StatCard key={i} {...s} delay={i * 0.1} />
-        ))}
-      </motion.div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        {/* Main Chart Area */}
-        <motion.div variants={fadeInUp} initial="initial" animate="animate" className="lg:col-span-2 space-y-8">
-          <GlassCard className="p-8">
-            <div className="flex items-center justify-between mb-8">
+      {/* STAT TILES */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        {stats.map((item, i) => (
+          <button
+            key={i}
+            // onClick={() => router.push(item.route)}
+            className={`group relative text-left p-8 rounded-[32px] overflow-hidden transition-all duration-500 h-44 flex flex-col justify-between shadow-lg hover:shadow-2xl bg-gradient-to-br ${item.color} text-white border-none`}
+          >
+            <div className="absolute inset-0 opacity-90 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/diagonal-striped-brick.png')]" />
+            <div className="relative z-10 flex flex-col justify-between h-full w-full">
+              <div className="flex items-center justify-between">
+                <div className="h-10 w-10 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center group-hover:scale-110 transition-transform shadow-inner">
+                  <item.icon size={20} className="text-white drop-shadow-md" />
+                </div>
+                {/* {item.alert && <div className="h-2.5 w-2.5 rounded-full bg-white animate-ping shadow-[0_0_10px_white]" />} */}
+              </div>
               <div>
-                <h3 className="text-xl font-bold text-slate-800">Operational Distribution</h3>
-                <p className="text-sm text-slate-500">NBCC Direct vs. Shapoorji Pallonji (By Category)</p>
-              </div>
-              <div className="flex gap-2">
-                <div className="flex items-center gap-1.5 px-3 py-1 bg-indigo-50 rounded-full text-[10px] font-bold text-indigo-600">
-                  <div className="w-2 h-2 bg-indigo-600 rounded-full" /> NBCC
-                </div>
-                <div className="flex items-center gap-1.5 px-3 py-1 bg-purple-50 rounded-full text-[10px] font-bold text-purple-600">
-                  <div className="w-2 h-2 bg-purple-600 rounded-full" /> SHAPOORJI
+                <p className="text-4xl font-black tracking-tighter drop-shadow-sm leading-none">{item.value}</p>
+                <div className="flex flex-col gap-0.5 mt-2">
+                  <p className="text-[10px] font-black uppercase tracking-widest opacity-95 leading-tight">{item.title}</p>
+                  <p className="text-[9px] font-medium opacity-75 uppercase tracking-wider leading-none">{item.subtitle}</p>
                 </div>
               </div>
             </div>
-            <div className="h-[350px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={[
-                  { name: "Civil", nbcc: 12, sp: 5 },
-                  { name: "Electrical", nbcc: 9, sp: 3 },
-                  { name: "Mechanical", nbcc: 4, sp: 8 },
-                  { name: "Plumbing", nbcc: 15, sp: 2 },
-                  { name: "AMC", nbcc: 7, sp: 1 },
-                ]} barGap={8}>
-                  <defs>
-                    <linearGradient id="barNbcc" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#4f46e5" stopOpacity={1} />
-                      <stop offset="100%" stopColor="#818cf8" stopOpacity={0.8} />
-                    </linearGradient>
-                    <linearGradient id="barSp" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#a855f7" stopOpacity={1} />
-                      <stop offset="100%" stopColor="#d8b4fe" stopOpacity={0.8} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
-                  <XAxis dataKey="name" axisLine={false} tickLine={false} fontSize={12} tick={{fill: '#64748b', fontWeight: 600}} dy={10} />
-                  <YAxis axisLine={false} tickLine={false} fontSize={12} tick={{fill: '#64748b'}} />
-                  <Tooltip 
-                    cursor={{fill: '#f8fafc'}}
-                    contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)' }}
-                  />
-                  <Bar dataKey="nbcc" fill="url(#barNbcc)" radius={[6, 6, 0, 0]} barSize={30} />
-                  <Bar dataKey="sp" fill="url(#barSp)" radius={[6, 6, 0, 0]} barSize={30} />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </GlassCard>
+          </button>
+        ))}
+      </div>
+
+      {/* MAIN CONTENT SPLIT */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+        {/* Left Column */}
+        <div className="lg:col-span-2 space-y-8">
+          <Card className="rounded-[48px] border-none shadow-xl overflow-hidden bg-white p-0">
+            <CardHeader className="p-0">
+              <div className="p-10 bg-gradient-to-r from-slate-800 via-slate-950 to-indigo-950 text-white relative overflow-hidden">
+                <div className="absolute inset-0 opacity-20 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+                <div className="flex justify-between items-center relative z-10">
+                  <div className="flex items-center gap-5">
+                    <div className="h-14 w-14 rounded-3xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg">
+                      <Activity size={28} className="text-white" />
+                    </div>
+                    <div className="space-y-1">
+                      <CardTitle className="text-2xl font-black uppercase tracking-tight">Operational Distribution</CardTitle>
+                      <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest leading-none">NBCC Direct vs. Shapoorji Pallonji Execution</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="p-10 bg-slate-50/30">
+              <div className="h-[350px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={chartData} barGap={12}>
+                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                    <XAxis dataKey="name" axisLine={false} tickLine={false} fontSize={10} tick={{ fill: '#64748b', fontWeight: 900 }} dy={10} />
+                    <YAxis axisLine={false} tickLine={false} fontSize={10} tick={{ fill: '#64748b' }} />
+                    <Tooltip cursor={{ fill: '#f1f5f9' }} contentStyle={{ borderRadius: '24px', border: 'none', boxShadow: '0 20px 25px -5px rgba(0,0,0,0.1)' }} />
+                    <Bar dataKey="nbcc" fill="#4f46e5" radius={[4, 4, 0, 0]} barSize={40} />
+                    <Bar dataKey="sp" fill="#a855f7" radius={[4, 4, 0, 0]} barSize={40} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Table Area */}
-          <GlassCard className="overflow-hidden">
-             <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-white/30">
-               <h3 className="text-xl font-bold text-slate-800 italic">Critical Review Queue</h3>
-               <button className="text-indigo-600 font-bold text-xs hover:tracking-widest transition-all uppercase flex items-center gap-1">
-                 Full Ledger <ChevronRight size={14} />
-               </button>
-             </div>
-             <table className="w-full text-left">
-               <thead className="bg-slate-50/50 text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                 <tr>
-                   <th className="px-8 py-4 text-center">ID</th>
-                   <th className="px-8 py-4">Contract Details</th>
-                   <th className="px-8 py-4">Scale</th>
-                   <th className="px-8 py-4">Status</th>
-                   <th className="px-8 py-4"></th>
-                 </tr>
-               </thead>
-               <tbody className="divide-y divide-slate-50">
-                 {[
-                   { id: "NB-88", title: "Facade Lighting - Gate 2", type: "Electrical", scale: "Small", status: "Review", color: "blue" },
-                   { id: "NB-92", title: "HVAC Central Plant Repair", type: "Mechanical", scale: "Large", status: "Forwarded", color: "purple" },
-                   { id: "NB-10", title: "VIP Lounge Flooring", type: "Civil", scale: "Small", status: "Execution", color: "emerald" },
-                 ].map((item, i) => (
-                   <tr key={i} className="hover:bg-slate-50/50 transition-colors group">
-                     <td className="px-8 py-5 text-xs font-bold text-indigo-400 tracking-tighter">#{item.id}</td>
-                     <td className="px-8 py-5">
-                       <p className="font-bold text-slate-700 text-sm">{item.title}</p>
-                       <p className="text-[10px] font-medium text-slate-400 uppercase">{item.type}</p>
-                     </td>
-                     <td className="px-8 py-5 text-xs font-bold text-slate-500">{item.scale}</td>
-                     <td className="px-8 py-5">
-                        <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest bg-${item.color}-50 text-${item.color}-600 border border-${item.color}-100`}>
-                          {item.status}
-                        </span>
-                     </td>
-                     <td className="px-8 py-5 text-right">
-                       <button className="opacity-0 group-hover:opacity-100 transition-opacity p-2 bg-indigo-600 text-white rounded-xl shadow-lg shadow-indigo-200">
-                         <ArrowUpRight size={16} />
-                       </button>
-                     </td>
-                   </tr>
-                 ))}
-               </tbody>
-             </table>
-          </GlassCard>
-        </motion.div>
-
-        {/* Right Sidebar Section */}
-        <motion.div variants={fadeInUp} initial="initial" animate="animate" className="space-y-8">
-          
-          {/* Engineering Workforce Card */}
-          <GlassCard className="p-8 bg-gradient-to-b from-slate-900 to-slate-800 text-white border-none relative overflow-hidden">
-            <div className="absolute top-[-20%] left-[-20%] w-64 h-64 bg-indigo-500/20 rounded-full blur-3xl" />
-            <div className="relative z-10">
-              <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-                <Construction className="text-amber-400" size={20} /> Field Allocation
-              </h3>
-              <div className="space-y-8">
+          <Card className="rounded-[48px] border-none shadow-xl overflow-hidden bg-white">
+            <div className="p-8 border-b border-slate-100 flex items-center justify-between bg-white">
+              <div className="flex items-center gap-3">
+                <div className="h-2 w-2 rounded-full bg-indigo-600 animate-pulse" />
+                <h3 className="text-sm font-black uppercase tracking-widest text-slate-800">Critical Review Queue</h3>
+              </div>
+              <Button variant="ghost" className="text-indigo-600 font-black text-[10px] uppercase tracking-widest gap-1">
+                Full Ledger <ChevronRight size={14} />
+              </Button>
+            </div>
+            <Table>
+              <TableBody>
                 {[
-                  { name: "Team Civil Alpha", status: "On Site", progress: 85, color: "bg-indigo-400" },
-                  { name: "Team Electro Beta", status: "Standby", progress: 30, color: "bg-amber-400" },
-                  { name: "Team HVAC Gamma", status: "On Site", progress: 92, color: "bg-rose-400" },
+                  { id: "NB-88", title: "Facade Lighting - Gate 2", type: "Electrical", scale: "Small", status: "Review" },
+                  { id: "NB-92", title: "HVAC Central Plant Repair", type: "Mechanical", scale: "Large", status: "Forwarded" },
+                  { id: "NB-10", title: "VIP Lounge Flooring", type: "Civil", scale: "Small", status: "Execution" },
+                ].map((item, i) => (
+                  <TableRow key={i} className="hover:bg-slate-50 transition-all border-slate-50 group">
+                    <TableCell className="pl-10 py-6">
+                      <span className="font-mono text-[10px] font-black text-indigo-700 bg-indigo-50 px-2 py-1 rounded-md">{item.id}</span>
+                    </TableCell>
+                    <TableCell>
+                      <p className="font-black text-slate-800 text-sm uppercase tracking-tight">{item.title}</p>
+                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{item.type}</p>
+                    </TableCell>
+                    <TableCell className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{item.scale}</TableCell>
+                    <TableCell><NBCCStatusBadge status={item.status} /></TableCell>
+                    <TableCell className="pr-10 text-right">
+                      <Button size="icon" variant="ghost" className="rounded-xl hover:bg-indigo-50 text-indigo-600">
+                        <ArrowUpRight size={18} />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Card>
+        </div>
+
+        {/* Right Column */}
+        <div className="space-y-8">
+          {/* Engineering Workforce Card */}
+          <Card className="rounded-[40px] border-none shadow-lg bg-slate-900 text-white overflow-hidden relative group">
+            <div className="absolute inset-0 opacity-20 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+            <div className="p-8 relative z-10 space-y-8">
+              <div className="flex items-center justify-between">
+                <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-indigo-400">Field Allocation</h3>
+                <Construction size={20} className="text-slate-500" />
+              </div>
+
+              <div className="space-y-6">
+                {[
+                  { name: "Team Civil Alpha", status: "On Site", progress: 85, color: "bg-indigo-500" },
+                  { name: "Team Electro Beta", status: "Standby", progress: 30, color: "bg-amber-500" },
+                  { name: "Team HVAC Gamma", status: "On Site", progress: 92, color: "bg-emerald-500" },
                 ].map((team, i) => (
                   <div key={i} className="space-y-3">
                     <div className="flex justify-between items-end">
                       <div>
-                        <p className="text-xs font-black text-white uppercase tracking-widest">{team.name}</p>
-                        <p className="text-[10px] text-slate-400 font-bold">{team.status}</p>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-white">{team.name}</p>
+                        <p className="text-[9px] font-bold text-slate-500 uppercase">{team.status}</p>
                       </div>
-                      <span className="text-xs font-bold">{team.progress}%</span>
+                      <span className="text-[10px] font-black text-indigo-400">{team.progress}%</span>
                     </div>
-                    <div className="h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: `${team.progress}%` }}
-                        transition={{ duration: 1, delay: i * 0.2 }}
-                        className={`h-full ${team.color}`} 
-                      />
-                    </div>
+                    <Progress value={team.progress} className={cn("h-1.5 bg-white/10", `[&>div]:${team.color}`)} />
                   </div>
                 ))}
               </div>
-              <button className="w-full mt-10 py-4 bg-white/10 hover:bg-white/20 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] transition-all border border-white/5">
+
+              <Button className="w-full h-12 rounded-2xl bg-white/5 hover:bg-white/10 text-white border border-white/10 font-black uppercase tracking-[0.2em] text-[9px] transition-all">
                 Optimize Deployments
-              </button>
+              </Button>
             </div>
-          </GlassCard>
+          </Card>
 
           {/* Efficiency Pulse */}
-          <GlassCard className="p-8">
-            <h3 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
-              <CheckCircle className="text-emerald-500" size={20} /> PMC Efficiency
-            </h3>
-            <div className="h-40">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={[
-                  { val: 10 }, { val: 40 }, { val: 25 }, { val: 50 }, { val: 45 }, { val: 80 }
-                ]}>
-                  <defs>
-                    <linearGradient id="pulse" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-                      <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
-                    </linearGradient>
-                  </defs>
-                  <Area type="monotone" dataKey="val" stroke="#10b981" strokeWidth={3} fill="url(#pulse)" />
-                </AreaChart>
-              </ResponsiveContainer>
+          <Card className="rounded-[40px] border-none shadow-lg bg-white overflow-hidden p-0">
+            <div className="p-6 flex items-center justify-between text-white relative overflow-hidden bg-gradient-to-r from-emerald-500 to-teal-600">
+              <div className="absolute inset-0 opacity-20 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+              <div className="flex items-center gap-4 relative z-10">
+                <div className="h-10 w-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center shadow-inner">
+                  <CheckCircle2 size={18} className="text-white drop-shadow-md" />
+                </div>
+                <h3 className="text-[11px] font-black uppercase tracking-[0.2em] drop-shadow-sm">PMC Efficiency</h3>
+              </div>
+              <Activity size={18} className="text-white/70" />
             </div>
-            <div className="mt-4 flex justify-between items-center bg-emerald-50 p-4 rounded-2xl">
-               <span className="text-xs font-bold text-emerald-700 uppercase tracking-tighter">Current Score</span>
-               <span className="text-2xl font-black text-emerald-700">92%</span>
-            </div>
-          </GlassCard>
 
-        </motion.div>
+            <div className="p-8 bg-slate-50/30">
+              <div className="h-32 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={[{ v: 10 }, { v: 40 }, { v: 25 }, { v: 50 }, { v: 45 }, { v: 80 }]}>
+                    <defs>
+                      <linearGradient id="colorEff" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <Area type="monotone" dataKey="v" stroke="#10b981" strokeWidth={3} fill="url(#colorEff)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+              <div className="mt-6 flex justify-between items-center bg-white border border-slate-100 p-4 rounded-2xl shadow-sm">
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Efficiency Score</span>
+                <span className="text-2xl font-black text-emerald-600 tracking-tighter">92.8%</span>
+              </div>
+            </div>
+          </Card>
+        </div>
+
       </div>
     </div>
   );

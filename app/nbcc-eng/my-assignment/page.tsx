@@ -2,25 +2,36 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 import { 
-  Search, Filter, Calendar, MapPin, 
-  Clock, AlertCircle, CheckCircle2, 
-  ChevronRight, MoreVertical, LayoutGrid, 
-  List, HardHat, Hammer, Droplets, Zap
+  Search, Filter, MapPin, 
+  Clock, CheckCircle2, 
+  ChevronRight, Building2,
+  HardHat, Hammer, Droplets, Zap,
+  Calendar, LayoutGrid, List, Activity
 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-// --- Framer Motion Variants ---
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: { opacity: 1, transition: { staggerChildren: 0.1 } }
-};
+// ─── Status & Priority Badges ─────────────────────────────────────
+function PriorityBadge({ priority }: { priority: string }) {
+  const styles: Record<string, string> = {
+    "Critical": "bg-rose-100 text-rose-700 border-rose-200",
+    "High": "bg-orange-100 text-orange-700 border-orange-200",
+    "Medium": "bg-amber-100 text-amber-700 border-amber-200",
+    "Low": "bg-slate-100 text-slate-700 border-slate-200",
+  };
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0 }
-};
+  return (
+    <Badge variant="outline" className={cn("text-[9px] font-black uppercase tracking-widest px-3 py-0.5 border-2 rounded-full", styles[priority])}>
+      {priority}
+    </Badge>
+  );
+}
 
-// --- Mock Data ---
+// ─── Mock Data ───────────────────────────────────────────────────
 const assignments = [
   {
     id: "CON-7721",
@@ -31,7 +42,7 @@ const assignments = [
     deadline: "24 Oct 2024",
     progress: 65,
     status: "In Progress",
-    gradient: "from-blue-50 via-blue-100 to-indigo-200",
+    color: "from-blue-500 to-indigo-600",
     icon: Zap
   },
   {
@@ -43,7 +54,7 @@ const assignments = [
     deadline: "26 Oct 2024",
     progress: 30,
     status: "In Progress",
-    gradient: "from-emerald-50 via-emerald-100 to-teal-200",
+    color: "from-emerald-500 to-teal-600",
     icon: Droplets
   },
   {
@@ -55,20 +66,8 @@ const assignments = [
     deadline: "30 Oct 2024",
     progress: 100,
     status: "Completed",
-    gradient: "from-orange-50 via-orange-100 to-amber-200",
+    color: "from-slate-700 to-slate-900",
     icon: Hammer
-  },
-  {
-    id: "CON-9011",
-    title: "HVAC Filter Cleaning & Service",
-    location: "Conference Room G, Level 2",
-    category: "Mechanical",
-    priority: "Low",
-    deadline: "02 Nov 2024",
-    progress: 0,
-    status: "Assigned",
-    gradient: "from-purple-50 via-purple-100 to-fuchsia-200",
-    icon: HardHat
   }
 ];
 
@@ -76,161 +75,145 @@ export default function MyAssignmentsPage() {
   const [filter, setFilter] = useState("All");
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] p-6 lg:p-10">
-      
-      {/* Header Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-        <motion.div 
-          initial={{ opacity: 0, x: -20 }} 
-          animate={{ opacity: 1, x: 0 }}
-        >
-          <h1 className="text-3xl font-black text-slate-800 tracking-tight">My Assignments</h1>
-          <p className="text-slate-500 font-medium">NBCC Direct Execution | Management Console</p>
-        </motion.div>
+        <div className="space-y-12 animate-in fade-in duration-1000 pb-20 font-sans selection:bg-indigo-100 p-10">
 
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
+      
+      {/* APEX HEADER */}
+      <div className="flex flex-col xl:flex-row justify-between items-start xl:items-end gap-6 relative">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 bg-indigo-50 text-indigo-700 px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border-2 border-indigo-200">
+            <HardHat size={14} className="animate-pulse" /> Engineering Personnel
+          </div>
+          <h1 className="text-6xl font-black text-slate-800 tracking-tighter uppercase leading-none">My <span className="text-indigo-600">Assignments</span></h1>
+          <p className="text-slate-500 font-medium text-xl italic underline underline-offset-8 decoration-indigo-200">
+            Direct execution portal for active infrastructure tasks and maintenance logs.
+          </p>
+        </div>
+
+        <div className="flex gap-4">
+          <div className="relative hidden lg:block">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
             <input 
               type="text" 
-              placeholder="Search tasks..." 
-              className="pl-10 pr-4 py-2 bg-white/70 backdrop-blur-md border border-white rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 shadow-sm w-64"
+              placeholder="SEARCH TASKS..." 
+              className="h-16 pl-12 pr-6 rounded-3xl border-2 border-slate-100 font-black uppercase tracking-widest text-[10px] bg-white shadow-xl focus:outline-none focus:border-indigo-300 w-64 transition-all"
             />
           </div>
-          <button className="p-2 bg-white rounded-xl border border-white shadow-sm hover:bg-slate-50">
-            <Filter className="w-5 h-5 text-slate-600" />
-          </button>
+          <Button 
+            variant="outline"
+            className="h-16 px-8 rounded-3xl border-2 border-indigo-200 font-black uppercase tracking-widest text-[10px] text-indigo-700 bg-white shadow-xl hover:bg-indigo-50 transition-all"
+          >
+            <Filter size={20} className="mr-2" /> Filter Tasks
+          </Button>
         </div>
       </div>
 
-      {/* Filter Tabs */}
-      <motion.div 
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="flex items-center gap-2 mb-8"
-      >
+      {/* FILTER TABS */}
+      <div className="flex flex-wrap items-center gap-3">
         {["All", "In Progress", "Pending", "Completed"].map((tab) => (
           <button
             key={tab}
             onClick={() => setFilter(tab)}
-            className={`px-5 py-2 rounded-full text-xs font-bold transition-all ${
+            className={cn(
+              "px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border-2",
               filter === tab 
-              ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200" 
-              : "bg-white text-slate-500 hover:bg-indigo-50"
-            }`}
+                ? "bg-slate-900 text-white border-slate-900 shadow-xl scale-105" 
+                : "bg-white text-slate-400 border-slate-100 hover:border-slate-200"
+            )}
           >
             {tab}
           </button>
         ))}
-      </motion.div>
+      </div>
 
-      {/* Assignment Cards Grid */}
-      <motion.div 
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6"
-      >
-        {assignments.map((item) => {
-          const Icon = item.icon;
-          return (
-            <motion.div
-              key={item.id}
-              variants={itemVariants}
-              whileHover={{ y: -8 }}
-              className={`group relative overflow-hidden rounded-3xl border border-white shadow-xl shadow-slate-200/60 p-6 bg-gradient-to-br ${item.gradient}`}
-            >
-              {/* Top Row: Icon & ID */}
-              <div className="flex justify-between items-start mb-6">
-                <div className="p-3 bg-white/60 backdrop-blur-md rounded-2xl shadow-sm">
-                  <Icon className="w-6 h-6 text-slate-700" />
+      {/* ASSIGNMENTS GRID */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
+        {assignments.map((item) => (
+          <Card key={item.id} className="rounded-[40px] border-none shadow-xl overflow-hidden bg-white group hover:shadow-2xl transition-all duration-500 p-0">
+            {/* Card Header with Pattern */}
+            <div className={cn("p-8 relative overflow-hidden bg-gradient-to-br text-white", item.color)}>
+              <div className="absolute inset-0 opacity-40 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/diagonal-striped-brick.png')]" />
+              
+              <div className="relative z-10 flex justify-between items-start">
+                <div className="h-12 w-12 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                  <item.icon size={24} className="text-white" />
                 </div>
-                <div className="flex flex-col items-end">
-                  <span className="text-[10px] font-black text-slate-400 tracking-widest uppercase mb-1">
-                    #{item.id}
-                  </span>
-                  <span className={`px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-tighter ${
-                    item.priority === "Critical" ? "bg-rose-500 text-white" : 
-                    item.priority === "High" ? "bg-orange-500 text-white" : "bg-slate-200 text-slate-600"
-                  }`}>
-                    {item.priority}
-                  </span>
-                </div>
-              </div>
-
-              {/* Title & Info */}
-              <div className="mb-6">
-                <h3 className="text-lg font-bold text-slate-800 leading-tight group-hover:text-indigo-700 transition-colors">
-                  {item.title}
-                </h3>
-                <div className="flex flex-col gap-2 mt-3">
-                  <div className="flex items-center gap-2 text-slate-500">
-                    <MapPin size={14} className="text-slate-400" />
-                    <span className="text-xs font-semibold">{item.location}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-slate-500">
-                    <Calendar size={14} className="text-slate-400" />
-                    <span className="text-xs font-semibold">Deadline: {item.deadline}</span>
+                <div className="text-right">
+                  <p className="font-mono text-[10px] font-black text-white/80 tracking-widest uppercase">{item.id}</p>
+                  <div className="mt-2">
+                    <PriorityBadge priority={item.priority} />
                   </div>
                 </div>
               </div>
 
-              {/* Progress Section */}
-              <div className="space-y-2 mb-6">
-                <div className="flex justify-between items-center">
-                  <span className="text-xs font-bold text-slate-600">Completion</span>
-                  <span className="text-xs font-black text-indigo-600">{item.progress}%</span>
-                </div>
-                <div className="h-2 w-full bg-white/50 rounded-full overflow-hidden">
-                  <motion.div 
-                    initial={{ width: 0 }}
-                    animate={{ width: `${item.progress}%` }}
-                    transition={{ duration: 1 }}
-                    className="h-full bg-indigo-600 rounded-full shadow-[0_0_8px_rgba(79,70,229,0.4)]"
-                  />
-                </div>
+              <div className="relative z-10 mt-8">
+                <h3 className="text-xl font-black uppercase tracking-tight leading-tight mb-2">{item.title}</h3>
+                <p className="text-[10px] font-bold text-white/70 uppercase tracking-[0.2em]">{item.category}</p>
               </div>
+            </div>
 
-              {/* Action Buttons */}
-              <div className="flex items-center gap-2">
-                <button className="flex-1 py-3 bg-white/80 backdrop-blur-sm border border-white text-slate-700 rounded-2xl text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all shadow-sm">
-                  Update Progress
-                </button>
-                <button className="p-3 bg-white/40 backdrop-blur-sm border border-white text-slate-700 rounded-2xl hover:bg-white transition-all">
-                  <ChevronRight size={18} />
-                </button>
-              </div>
+            <CardContent className="p-8 space-y-6 bg-slate-50/30 relative">
+               <div className="absolute inset-0 opacity-[0.02] pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" />
+               
+               <div className="relative z-10 space-y-4">
+                  <div className="flex items-center gap-3 text-slate-500">
+                    <MapPin size={16} className="text-indigo-500" />
+                    <span className="text-[11px] font-bold uppercase tracking-wide">{item.location}</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-slate-500">
+                    <Calendar size={16} className="text-indigo-500" />
+                    <span className="text-[11px] font-bold uppercase tracking-wide">Deadline: {item.deadline}</span>
+                  </div>
 
-              {/* Background Glass Ornament */}
-              <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-white/20 rounded-full blur-2xl" />
-            </motion.div>
-          );
-        })}
-      </motion.div>
+                  {/* Progress Indicator */}
+                  <div className="pt-4 space-y-3">
+                    <div className="flex justify-between items-end">
+                      <span className="text-[9px] font-black uppercase tracking-[0.2em] text-slate-400">Task Completion</span>
+                      <span className="text-sm font-black text-slate-800">{item.progress}%</span>
+                    </div>
+                    <Progress value={item.progress} className="h-2 bg-slate-200 [&>div]:bg-indigo-600 rounded-full" />
+                  </div>
 
-      {/* Footer Info / Floating Action */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="mt-12 p-6 bg-white/50 backdrop-blur-md rounded-3xl border border-white flex flex-col md:flex-row items-center justify-between shadow-sm"
-      >
-        <div className="flex items-center gap-4 mb-4 md:mb-0">
-          <div className="flex -space-x-3">
-             {[1, 2, 3].map((i) => (
-               <div key={i} className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 flex items-center justify-center text-[10px] font-bold text-slate-600">
-                 EN
+                  {/* Actions */}
+                  <div className="flex gap-3 pt-4">
+                    <Button className="flex-1 h-14 rounded-2xl bg-white border-2 border-slate-200 text-slate-800 hover:bg-slate-50 font-black uppercase tracking-widest text-[10px] transition-all">
+                      Update Progress
+                    </Button>
+                    <Button size="icon" className="h-14 w-14 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg">
+                      <ChevronRight size={20} />
+                    </Button>
+                  </div>
                </div>
-             ))}
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* FOOTER WIDGET */}
+      <Card className="rounded-[48px] border-none shadow-xl overflow-hidden bg-slate-900 text-white relative">
+        <div className="absolute inset-0 opacity-20 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/carbon-fibre.png')]" />
+        <div className="p-10 relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="flex items-center gap-6">
+            <div className="h-16 w-16 rounded-3xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center">
+              <Activity size={32} className="text-indigo-400 animate-pulse" />
+            </div>
+            <div>
+              <h4 className="text-lg font-black uppercase tracking-tight">Lead Engineer Oversight</h4>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">You are managing 4 active infrastructure contracts</p>
+            </div>
           </div>
-          <p className="text-xs font-bold text-slate-500 tracking-tight">
-            You are currently lead engineer for <span className="text-indigo-600 underline">4 active contracts</span>
-          </p>
+          
+          <div className="flex gap-4 w-full md:w-auto">
+            <Button className="h-16 px-10 rounded-3xl bg-white/5 hover:bg-white/10 text-white border border-white/10 font-black uppercase tracking-widest text-[10px] flex-1 md:flex-none">
+              <Clock size={18} className="mr-2 text-amber-400" /> View Duty Roster
+            </Button>
+            <Button className="h-16 px-10 rounded-3xl bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase tracking-widest text-[10px] shadow-2xl flex-1 md:flex-none">
+              Generate Report
+            </Button>
+          </div>
         </div>
-        <button className="flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-2xl text-xs font-bold shadow-xl hover:scale-105 transition-all">
-          <Clock size={16} className="text-amber-400" /> View Duty Roster
-        </button>
-      </motion.div>
+      </Card>
+
     </div>
   );
 }
